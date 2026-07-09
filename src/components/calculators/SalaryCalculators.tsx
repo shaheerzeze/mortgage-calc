@@ -190,6 +190,9 @@ export const SalaryAnnualiser: React.FC = () => {
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(annualSalary)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              {formatCurrency(numAmount)} x {numMultiplier} = {formatCurrency(annualSalary)}
+            </p>
             <div className="h-[1px] bg-border my-6"></div>
             
             <div className="grid grid-cols-2 gap-4">
