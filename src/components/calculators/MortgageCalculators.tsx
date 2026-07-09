@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatCurrency } from '../../utils/mathHelpers';
+import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -8,11 +9,11 @@ import confetti from 'canvas-confetti';
 // 1. LTV CALCULATOR
 export const LtvCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [propertyValue, setPropertyValue] = useState<string>('300000');
-  const [loanAmount, setLoanAmount] = useState<string>('270000');
-  const [ltv, setLtv] = useState<string>('90');
-  const [depositAmount, setDepositAmount] = useState<string>('30000');
-  const [depositPercent, setDepositPercent] = useState<string>('10');
+  const [propertyValue, setPropertyValue] = usePersistentState<string>('ltv:propertyValue', '300000');
+  const [loanAmount, setLoanAmount] = usePersistentState<string>('ltv:loanAmount', '270000');
+  const [ltv, setLtv] = usePersistentState<string>('ltv:ltv', '90');
+  const [depositAmount, setDepositAmount] = usePersistentState<string>('ltv:depositAmount', '30000');
+  const [depositPercent, setDepositPercent] = usePersistentState<string>('ltv:depositPercent', '10');
   const [copied, setCopied] = useState(false);
 
   const numVal = parseFloat(propertyValue) || 0;
@@ -284,9 +285,9 @@ export const LtvCalculator: React.FC = () => {
 // 2. DEPOSIT CALCULATOR
 export const DepositCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [propertyValue, setPropertyValue] = useState<string>('300000');
-  const [deposit, setDeposit] = useState<string>('30000');
-  const [ltv, setLtv] = useState<string>('90');
+  const [propertyValue, setPropertyValue] = usePersistentState<string>('deposit:propertyValue', '300000');
+  const [deposit, setDeposit] = usePersistentState<string>('deposit:deposit', '30000');
+  const [ltv, setLtv] = usePersistentState<string>('deposit:ltv', '90');
   const [copied, setCopied] = useState(false);
 
   const numVal = parseFloat(propertyValue) || 0;
@@ -456,9 +457,9 @@ export const DepositCalculator: React.FC = () => {
 // 3. LOAN-TO-INCOME (LTI) CALCULATOR
 export const LtiCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [loanAmount, setLoanAmount] = useState<string>('225000');
-  const [applicant1Income, setApplicant1Income] = useState<string>('45000');
-  const [applicant2Income, setApplicant2Income] = useState<string>('15000');
+  const [loanAmount, setLoanAmount] = usePersistentState<string>('lti:loanAmount', '225000');
+  const [applicant1Income, setApplicant1Income] = usePersistentState<string>('lti:applicant1Income', '45000');
+  const [applicant2Income, setApplicant2Income] = usePersistentState<string>('lti:applicant2Income', '15000');
   const [copied, setCopied] = useState(false);
 
   const numLoan = parseFloat(loanAmount) || 0;
@@ -625,9 +626,9 @@ export const LtiCalculator: React.FC = () => {
 // 4. MORTGAGE REPAYMENT CALCULATOR
 export const MortgageRepaymentCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [loanAmount, setLoanAmount] = useState<string>('250000');
-  const [interestRate, setInterestRate] = useState<string>('4.5');
-  const [term, setTerm] = useState<string>('25');
+  const [loanAmount, setLoanAmount] = usePersistentState<string>('repayment:loanAmount', '250000');
+  const [interestRate, setInterestRate] = usePersistentState<string>('repayment:interestRate', '4.5');
+  const [term, setTerm] = usePersistentState<string>('repayment:term', '25');
   const [showAmortization, setShowAmortization] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -883,9 +884,9 @@ export const MortgageRepaymentCalculator: React.FC = () => {
 // 5. INTEREST-ONLY REPAYMENT CALCULATOR
 export const InterestOnlyCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [loanAmount, setLoanAmount] = useState<string>('250000');
-  const [interestRate, setInterestRate] = useState<string>('4.5');
-  const [term, setTerm] = useState<string>('25');
+  const [loanAmount, setLoanAmount] = usePersistentState<string>('interest-only:loanAmount', '250000');
+  const [interestRate, setInterestRate] = usePersistentState<string>('interest-only:interestRate', '4.5');
+  const [term, setTerm] = usePersistentState<string>('interest-only:term', '25');
   const [copied, setCopied] = useState(false);
 
   const P = parseFloat(loanAmount) || 0;

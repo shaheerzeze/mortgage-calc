@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatCurrency, calculateUKTax, calculateGrossFromNet } from '../../utils/mathHelpers';
+import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -8,7 +9,7 @@ import confetti from 'canvas-confetti';
 // 1. UK TAX ESTIMATOR
 export const TaxEstimator: React.FC = () => {
   const { addHistory } = useApp();
-  const [grossSalary, setGrossSalary] = useState<string>('50000');
+  const [grossSalary, setGrossSalary] = usePersistentState<string>('tax-estimator:grossSalary', '50000');
   const [copied, setCopied] = useState(false);
 
   const gross = parseFloat(grossSalary) || 0;
@@ -138,8 +139,8 @@ export const TaxEstimator: React.FC = () => {
 // 2. REVERSE TAX CALCULATOR
 export const ReverseTaxCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [targetNet, setTargetNet] = useState<string>('3000');
-  const [frequency, setFrequency] = useState<'monthly' | 'annual'>('monthly');
+  const [targetNet, setTargetNet] = usePersistentState<string>('reverse-tax:targetNet', '3000');
+  const [frequency, setFrequency] = usePersistentState<'monthly' | 'annual'>('reverse-tax:frequency', 'monthly');
   const [copied, setCopied] = useState(false);
 
   const numNet = parseFloat(targetNet) || 0;
@@ -288,7 +289,7 @@ export const ReverseTaxCalculator: React.FC = () => {
 // 3. TAX BREAKDOWN
 export const TaxBreakdown: React.FC = () => {
   const { addHistory } = useApp();
-  const [grossSalary, setGrossSalary] = useState<string>('60000');
+  const [grossSalary, setGrossSalary] = usePersistentState<string>('tax-breakdown:grossSalary', '60000');
   const [copied, setCopied] = useState(false);
 
   const gross = parseFloat(grossSalary) || 0;

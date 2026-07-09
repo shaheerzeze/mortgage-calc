@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles, Calendar, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -7,26 +8,26 @@ import confetti from 'canvas-confetti';
 // 1. PERCENTAGE CALCULATORS (Percentage of, Percentage Change, Difference)
 export const PercentageCalculators: React.FC = () => {
   const { addHistory } = useApp();
-  const [activeTab, setActiveTab] = useState<'of' | 'change' | 'diff'>('of');
+  const [activeTab, setActiveTab] = usePersistentState<'of' | 'change' | 'diff'>('percentage:activeTab', 'of');
   const [copied, setCopied] = useState(false);
 
   // Tab 1: What is X% of Y?
-  const [pctX, setPctX] = useState('15');
-  const [pctY, setPctY] = useState('250000');
+  const [pctX, setPctX] = usePersistentState('percentage:pctX', '15');
+  const [pctY, setPctY] = usePersistentState('percentage:pctY', '250000');
   const numPctX = parseFloat(pctX) || 0;
   const numPctY = parseFloat(pctY) || 0;
   const ofResult = (numPctX / 100) * numPctY;
 
   // Tab 2: Percentage change from X to Y
-  const [changeX, setChangeX] = useState('1500');
-  const [changeY, setChangeY] = useState('1800');
+  const [changeX, setChangeX] = usePersistentState('percentage:changeX', '1500');
+  const [changeY, setChangeY] = usePersistentState('percentage:changeY', '1800');
   const numChangeX = parseFloat(changeX) || 0;
   const numChangeY = parseFloat(changeY) || 0;
   const changeResult = numChangeX > 0 ? ((numChangeY - numChangeX) / numChangeX) * 100 : 0;
 
   // Tab 3: Difference between X and Y
-  const [diffX, setDiffX] = useState('320000');
-  const [diffY, setDiffY] = useState('300000');
+  const [diffX, setDiffX] = usePersistentState('percentage:diffX', '320000');
+  const [diffY, setDiffY] = usePersistentState('percentage:diffY', '300000');
   const numDiffX = parseFloat(diffX) || 0;
   const numDiffY = parseFloat(diffY) || 0;
   const diffAbs = Math.abs(numDiffX - numDiffY);
@@ -279,8 +280,8 @@ const calcDateDifference = (start: Date, end: Date) => {
 // 2. AGE CALCULATOR
 export const AgeCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [dob, setDob] = useState('1990-01-15');
-  const [targetDate, setTargetDate] = useState(new Date().toISOString().split('T')[0]);
+  const [dob, setDob] = usePersistentState('age:dob', '1990-01-15');
+  const [targetDate, setTargetDate] = usePersistentState('age:targetDate', () => new Date().toISOString().split('T')[0]);
   const [copied, setCopied] = useState(false);
 
   const startDate = new Date(dob);
@@ -403,9 +404,9 @@ export const AgeCalculator: React.FC = () => {
 // 3. MORTGAGE END DATE CALCULATOR
 export const MortgageEndDateCalculator: React.FC = () => {
   const { addHistory, lender } = useApp();
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
-  const [term, setTerm] = useState('25');
-  const [dob, setDob] = useState('1990-01-15');
+  const [startDate, setStartDate] = usePersistentState('mortgage-end:startDate', () => new Date().toISOString().split('T')[0]);
+  const [term, setTerm] = usePersistentState('mortgage-end:term', '25');
+  const [dob, setDob] = usePersistentState('mortgage-end:dob', '1990-01-15');
   const [copied, setCopied] = useState(false);
 
   const parsedStart = new Date(startDate);
@@ -569,8 +570,8 @@ export const MortgageEndDateCalculator: React.FC = () => {
 // 4. DATE DIFFERENCE CALCULATOR
 export const DateDifferenceCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [dateA, setDateA] = useState(new Date().toISOString().split('T')[0]);
-  const [dateB, setDateB] = useState(new Date().toISOString().split('T')[0]);
+  const [dateA, setDateA] = usePersistentState('date-difference:dateA', () => new Date().toISOString().split('T')[0]);
+  const [dateB, setDateB] = usePersistentState('date-difference:dateB', () => new Date().toISOString().split('T')[0]);
   const [copied, setCopied] = useState(false);
 
   const start = new Date(dateA);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatCurrency } from '../../utils/mathHelpers';
+import { usePersistentState } from '../../hooks/usePersistentState';
 import { Sparkles, Copy, RotateCcw, Star, HelpCircle, Plus, Trash2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -45,9 +46,9 @@ export const CalculatorHeader: React.FC<{ title: string; calculatorId: string; o
 // 1. SALARY ANNUALISER
 export const SalaryAnnualiser: React.FC = () => {
   const { addHistory } = useApp();
-  const [amount, setAmount] = useState<string>('2500');
-  const [frequency, setFrequency] = useState<string>('monthly');
-  const [multiplier, setMultiplier] = useState<string>('12');
+  const [amount, setAmount] = usePersistentState<string>('salary-annualiser:amount', '2500');
+  const [frequency, setFrequency] = usePersistentState<string>('salary-annualiser:frequency', 'monthly');
+  const [multiplier, setMultiplier] = usePersistentState<string>('salary-annualiser:multiplier', '12');
   const [copied, setCopied] = useState(false);
 
   const freqMultipliers: Record<string, number> = {
@@ -222,13 +223,13 @@ interface SalaryEntry {
 
 export const AverageSalaryCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [salaries, setSalaries] = useState<SalaryEntry[]>([
+  const [salaries, setSalaries] = usePersistentState<SalaryEntry[]>('average-salary:salaries', [
     { amount: '40000', frequency: 'yearly' },
     { amount: '42000', frequency: 'yearly' },
     { amount: '45000', frequency: 'yearly' },
   ]);
-  const [ignoreHighest, setIgnoreHighest] = useState(false);
-  const [ignoreLowest, setIgnoreLowest] = useState(false);
+  const [ignoreHighest, setIgnoreHighest] = usePersistentState('average-salary:ignoreHighest', false);
+  const [ignoreLowest, setIgnoreLowest] = usePersistentState('average-salary:ignoreLowest', false);
   const [copied, setCopied] = useState(false);
 
   const freqMultipliers: Record<string, number> = {
@@ -476,10 +477,10 @@ export const AverageSalaryCalculator: React.FC = () => {
 // 3. CUSTOM SALARY CALCULATOR
 export const CustomSalaryCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [frequency, setFrequency] = useState<string>('monthly');
-  const [entryCount, setEntryCount] = useState<number>(12);
-  const [customEntryCount, setCustomEntryCount] = useState<string>('12');
-  const [amounts, setAmounts] = useState<string[]>(Array(12).fill(''));
+  const [frequency, setFrequency] = usePersistentState<string>('custom-salary:frequency', 'monthly');
+  const [entryCount, setEntryCount] = usePersistentState<number>('custom-salary:entryCount', 12);
+  const [customEntryCount, setCustomEntryCount] = usePersistentState<string>('custom-salary:customEntryCount', '12');
+  const [amounts, setAmounts] = usePersistentState<string[]>('custom-salary:amounts', () => Array(12).fill(''));
   const [copied, setCopied] = useState(false);
 
   const frequencyFieldCounts: Record<string, number> = {
@@ -695,7 +696,7 @@ export const IncomeBuilder: React.FC = () => {
   const { addHistory, lender, incomeBuilderRules, updateIncomeBuilderRule } = useApp();
   const [copied, setCopied] = useState(false);
 
-  const [incomes, setIncomes] = useState<IncomeItem[]>([
+  const [incomes, setIncomes] = usePersistentState<IncomeItem[]>('income-builder:incomes', [
     { key: 'basic', name: 'Basic Salary', amount: '45000' },
     { key: 'bonus', name: 'Bonus', amount: '5000' },
     { key: 'commission', name: 'Commission', amount: '2000' },
