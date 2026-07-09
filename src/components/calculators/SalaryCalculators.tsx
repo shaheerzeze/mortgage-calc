@@ -516,6 +516,14 @@ export const CustomSalaryCalculator: React.FC = () => {
     }
   };
 
+  const handleCustomEntryCountChange = (value: string) => {
+    setCustomEntryCount(value);
+    const parsedValue = parseInt(value, 10);
+    if (!Number.isNaN(parsedValue) && parsedValue > 0) {
+      syncEntryCount(parsedValue);
+    }
+  };
+
   const handleAmountChange = (index: number, value: string) => {
     setAmounts(current => current.map((amount, i) => i === index ? value : amount));
   };
@@ -600,10 +608,7 @@ ${lines}
                 type="number"
                 min="1"
                 value={customEntryCount}
-                onChange={(e) => {
-                  setCustomEntryCount(e.target.value);
-                  syncEntryCount(parseInt(e.target.value) || 1);
-                }}
+                onChange={(e) => handleCustomEntryCountChange(e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
                 placeholder="Enter any number of fields"
               />
