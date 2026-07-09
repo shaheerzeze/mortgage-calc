@@ -248,6 +248,10 @@ export const AverageSalaryCalculator: React.FC = () => {
     setSalaries(updated);
   };
 
+  const handleFrequencyChange = (value: string) => {
+    setSalaries(salaries.map(salary => ({ ...salary, frequency: value })));
+  };
+
   const addSalaryEntry = () => {
     setSalaries([...salaries, { amount: '', frequency: 'yearly' }]);
   };
@@ -381,7 +385,7 @@ export const AverageSalaryCalculator: React.FC = () => {
                     </div>
                     <select
                       value={salary.frequency}
-                      onChange={(e) => handleSalaryChange(index, 'frequency', e.target.value)}
+                      onChange={(e) => handleFrequencyChange(e.target.value)}
                       className="px-2 py-1.5 bg-background border border-border rounded text-sm text-foreground focus:outline-none"
                     >
                       <option value="yearly">Yearly</option>
@@ -495,7 +499,7 @@ export const CustomSalaryCalculator: React.FC = () => {
   const monthlyTotal = annualTotal / 12;
 
   const syncEntryCount = (count: number) => {
-    const nextCount = Math.max(1, Math.min(52, count || 1));
+    const nextCount = Math.max(1, count || 1);
     setEntryCount(nextCount);
     setCustomEntryCount(nextCount.toString());
     setAmounts(current => {
@@ -563,8 +567,8 @@ ${lines}
         onCopy={handleCopy}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-7 space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 space-y-5">
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-2">
               Frequency
@@ -588,48 +592,25 @@ ${lines}
           </div>
 
           {frequency === 'custom' && (
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Number of Salary Fields
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {[1, 2, 3, 4, 5, 6].map((count) => (
-                <button
-                  key={count}
-                  type="button"
-                  onClick={() => syncEntryCount(count)}
-                  className={`min-w-10 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
-                    entryCount === count
-                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                      : 'border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                  }`}
-                >
-                  {count}
-                </button>
-              ))}
-              <div className={`flex items-center gap-1 rounded-lg border px-2 py-1 ${
-                ![1, 2, 3, 4, 5, 6].includes(entryCount)
-                  ? 'bg-primary/10 border-primary'
-                  : 'border-border bg-background'
-              }`}>
-                <span className="text-xs font-semibold text-muted-foreground">Custom</span>
-                <input
-                  type="number"
-                  min="1"
-                  max="52"
-                  value={customEntryCount}
-                  onChange={(e) => {
-                    setCustomEntryCount(e.target.value);
-                    syncEntryCount(parseInt(e.target.value) || 1);
-                  }}
-                  className="w-14 bg-transparent text-sm font-semibold text-foreground focus:outline-none"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                Number of Salary Fields
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={customEntryCount}
+                onChange={(e) => {
+                  setCustomEntryCount(e.target.value);
+                  syncEntryCount(parseInt(e.target.value) || 1);
+                }}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                placeholder="Enter any number of fields"
+              />
             </div>
-          </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {amounts.slice(0, entryCount).map((amount, index) => (
               <div key={index} className="p-3 rounded-lg border border-border bg-background">
                 <label className="block text-xs font-semibold text-muted-foreground mb-2">
@@ -650,7 +631,7 @@ ${lines}
           </div>
         </div>
 
-        <div className="lg:col-span-5 bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50 lg:sticky lg:top-28 self-start">
+        <div className="lg:col-span-4 bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50 lg:sticky lg:top-28 self-start">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Total Annual Figure

@@ -262,7 +262,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
 
         {/* Page Content Viewport */}
         <main className={`relative flex-1 overflow-y-auto p-4 md:p-8 bg-background ${
-          isHomePage ? 'isolate' : 'max-w-5xl w-full mx-auto'
+          isHomePage ? 'isolate' : 'max-w-6xl w-full mx-auto'
         }`}>
           {isHomePage && (
             <div
@@ -270,7 +270,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
               aria-hidden="true"
             />
           )}
-          <div className={isHomePage ? 'relative z-10 max-w-5xl w-full mx-auto' : undefined}>
+          <div className={isHomePage ? 'relative z-10 max-w-6xl w-full mx-auto' : undefined}>
             {children}
           </div>
         </main>
