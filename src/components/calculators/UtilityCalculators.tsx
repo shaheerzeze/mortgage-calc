@@ -237,9 +237,9 @@ export const PercentageCalculators: React.FC = () => {
             <div className="text-xs text-muted-foreground flex gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-accent shrink-0" />
               <span>
-                {activeTab === 'of' && `Calculated: ${pctX}% of ${pctY}`}
-                {activeTab === 'change' && `Calculated: Shift from ${changeX} to ${changeY}`}
-                {activeTab === 'diff' && `Calculated: Variance from ${diffX} relative to ${diffY}`}
+                {activeTab === 'of' && `${pctX} / 100 x ${pctY} = ${ofResult.toFixed(2)}`}
+                {activeTab === 'change' && `((${changeY} - ${changeX}) / ${changeX}) x 100 = ${changeResult.toFixed(2)}%`}
+                {activeTab === 'diff' && `|${diffX} - ${diffY}| = ${diffAbs.toFixed(2)}, then / ${diffX} x 100 = ${diffPct.toFixed(2)}%`}
               </span>
             </div>
           </div>
@@ -385,7 +385,7 @@ export const AgeCalculator: React.FC = () => {
             
             <div className="text-xs text-muted-foreground flex gap-1.5 items-center">
               <Calendar className="w-4 h-4 text-accent shrink-0" />
-              <span>Age calculation is verified client-side only.</span>
+              <span>{dob} to {targetDate} = {age.years} years, {age.months} months, {age.days} days</span>
             </div>
           </div>
 
@@ -551,7 +551,7 @@ export const MortgageEndDateCalculator: React.FC = () => {
             <div className="h-[1px] bg-border my-6"></div>
             
             <div className="text-xs text-muted-foreground">
-              Max standard criteria age: <span className="font-semibold text-foreground">{ageLimit}</span> (Based on lender: {lender.toUpperCase()})
+              {startDate} + {yearsTerm} years = {endDate.toISOString().split('T')[0]}; age at end is {clientAgeAtEnd.toFixed(1)} years.
             </div>
           </div>
 
@@ -692,7 +692,7 @@ export const DateDifferenceCalculator: React.FC = () => {
             <div className="h-[1px] bg-border my-6"></div>
             
             <div className="text-xs text-muted-foreground">
-              Computes the absolute distance between Date A and Date B.
+              Absolute difference between {dateA} and {dateB} = {totalDays} days, or {totalWeeks} full weeks.
             </div>
           </div>
 

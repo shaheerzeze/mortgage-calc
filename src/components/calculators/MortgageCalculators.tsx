@@ -229,6 +229,9 @@ export const LtvCalculator: React.FC = () => {
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Property Value</span>
                 <span className="text-2xl font-bold text-foreground">{formatCurrency(numVal)}</span>
+                <p className="mt-1 text-xs font-medium text-muted-foreground">
+                  LTV = {formatCurrency(numLoan)} / {formatCurrency(numVal)} x 100 = {numLtv.toFixed(2)}%
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -421,6 +424,9 @@ export const DepositCalculator: React.FC = () => {
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(loanAmount)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              {formatCurrency(numVal)} - {formatCurrency(numDeposit)} = {formatCurrency(loanAmount)}
+            </p>
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -582,6 +588,9 @@ export const LtiCalculator: React.FC = () => {
                 {ltiRatio <= 4.49 ? 'Within 4.5x' : ltiRatio <= 4.99 ? 'Within 5.0x' : 'High LTI (>5.0x)'}
               </span>
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              {formatCurrency(numLoan)} / ({formatCurrency(inc1)} + {formatCurrency(inc2)}) = {ltiRatio.toFixed(2)}x
+            </p>
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -780,6 +789,9 @@ export const MortgageRepaymentCalculator: React.FC = () => {
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(monthlyPayment)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              Payment uses {formatCurrency(P)} over {n} months at {(annualR / 12).toFixed(3)}% monthly interest
+            </p>
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -999,6 +1011,9 @@ export const InterestOnlyCalculator: React.FC = () => {
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(monthlyPayment)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              {formatCurrency(P)} x {annualR}% / 12 = {formatCurrency(monthlyPayment)}
+            </p>
             
             <div className="h-[1px] bg-border my-6"></div>
             

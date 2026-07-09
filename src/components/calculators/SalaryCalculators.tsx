@@ -52,8 +52,6 @@ export const SalaryAnnualiser: React.FC = () => {
 
   const freqMultipliers: Record<string, number> = {
     weekly: 52,
-    fortnightly: 26,
-    'two-weekly': 26,
     'four-weekly': 13,
     monthly: 12,
     quarterly: 4,
@@ -139,8 +137,6 @@ export const SalaryAnnualiser: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {[
                 { value: 'weekly', label: 'Weekly' },
-                { value: 'fortnightly', label: 'Fortnightly' },
-                { value: 'two-weekly', label: 'Two Weekly' },
                 { value: 'four-weekly', label: 'Four Weekly' },
                 { value: 'monthly', label: 'Monthly' },
                 { value: 'quarterly', label: 'Quarterly' },
@@ -237,7 +233,6 @@ export const AverageSalaryCalculator: React.FC = () => {
 
   const freqMultipliers: Record<string, number> = {
     weekly: 52,
-    fortnightly: 26,
     'four-weekly': 13,
     monthly: 12,
     quarterly: 4,
@@ -394,7 +389,6 @@ export const AverageSalaryCalculator: React.FC = () => {
                       <option value="yearly">Yearly</option>
                       <option value="monthly">Monthly</option>
                       <option value="four-weekly">Four Weekly</option>
-                      <option value="fortnightly">Fortnightly</option>
                       <option value="weekly">Weekly</option>
                     </select>
                   </div>
@@ -442,6 +436,9 @@ export const AverageSalaryCalculator: React.FC = () => {
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(averageAnnual)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              {formatCurrency(sum)} / {valuesToAverage.length || 1} counted entries = {formatCurrency(averageAnnual)}
+            </p>
             <div className="h-[1px] bg-border my-6"></div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -478,7 +475,6 @@ export const CustomSalaryCalculator: React.FC = () => {
 
   const frequencyFieldCounts: Record<string, number> = {
     weekly: 52,
-    fortnightly: 26,
     'four-weekly': 13,
     monthly: 12,
     quarterly: 4,
@@ -488,7 +484,6 @@ export const CustomSalaryCalculator: React.FC = () => {
 
   const frequencyOptions = [
     { value: 'weekly', label: 'Weekly' },
-    { value: 'fortnightly', label: 'Fortnightly' },
     { value: 'four-weekly', label: 'Four Weekly' },
     { value: 'monthly', label: 'Monthly' },
     { value: 'quarterly', label: 'Quarterly' },
@@ -622,7 +617,7 @@ ${lines}
             {amounts.slice(0, entryCount).map((amount, index) => (
               <div key={index} className="p-3 rounded-lg border border-border bg-background">
                 <label className="block text-xs font-semibold text-muted-foreground mb-2">
-                  {frequency === 'monthly' ? 'Month' : frequency === 'weekly' ? 'Week' : frequency === 'fortnightly' ? 'Fortnight' : frequency === 'four-weekly' ? 'Four-week period' : frequency === 'quarterly' ? 'Quarter' : frequency === 'half-yearly' ? 'Half-year period' : 'Salary Entry'} #{index + 1}
+                  {frequency === 'monthly' ? 'Month' : frequency === 'weekly' ? 'Week' : frequency === 'four-weekly' ? 'Four-week period' : frequency === 'quarterly' ? 'Quarter' : frequency === 'half-yearly' ? 'Half-year period' : 'Salary Entry'} #{index + 1}
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">GBP</span>
@@ -647,6 +642,9 @@ ${lines}
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(annualTotal)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              Sum of {entryCount} entered {frequency.replace('-', ' ')} fields = {formatCurrency(annualTotal)}
+            </p>
 
             <div className="h-[1px] bg-border my-6"></div>
 
@@ -822,6 +820,9 @@ ${breakDownText}
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(totalVerified)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              Accepted income total = sum of each declared amount x lender allowance %
+            </p>
             
             <div className="h-[1px] bg-border my-6"></div>
             

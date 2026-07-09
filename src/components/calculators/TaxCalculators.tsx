@@ -98,6 +98,9 @@ export const TaxEstimator: React.FC = () => {
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(taxDetails.netMonthly)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              ({formatCurrency(gross)} - {formatCurrency(taxDetails.totalIncomeTax)} - {formatCurrency(taxDetails.totalNI)}) / 12 = {formatCurrency(taxDetails.netMonthly)}
+            </p>
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -245,6 +248,9 @@ export const ReverseTaxCalculator: React.FC = () => {
             <div className="text-4xl font-extrabold text-primary tracking-tight">
               {formatCurrency(estimatedGross)}
             </div>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
+              Target annual net {formatCurrency(targetAnnualNet)} solved backwards to estimated gross {formatCurrency(estimatedGross)}
+            </p>
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -438,6 +444,9 @@ export const TaxBreakdown: React.FC = () => {
               <span className="text-foreground">Net Pay (Take-Home):</span>
               <span className="text-accent">{formatCurrency(taxDetails.netAnnual)}</span>
             </div>
+            <p className="pt-2 text-xs font-medium text-muted-foreground">
+              Net pay = {formatCurrency(gross)} - {formatCurrency(taxDetails.totalIncomeTax)} tax - {formatCurrency(taxDetails.totalNI)} NI
+            </p>
           </div>
 
           {copied && (
