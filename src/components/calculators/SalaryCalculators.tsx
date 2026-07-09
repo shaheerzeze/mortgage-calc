@@ -239,6 +239,14 @@ export const AverageSalaryCalculator: React.FC = () => {
     'half-yearly': 2,
     yearly: 1,
   };
+  const frequencyLabels: Record<string, string> = {
+    weekly: 'weekly',
+    'four-weekly': 'four-weekly',
+    monthly: 'monthly',
+    quarterly: 'quarterly',
+    'half-yearly': 'half-yearly',
+    yearly: 'yearly',
+  };
 
   const handleSalaryChange = (index: number, field: keyof SalaryEntry, value: string) => {
     const updated = [...salaries];
@@ -251,7 +259,7 @@ export const AverageSalaryCalculator: React.FC = () => {
   };
 
   const addSalaryEntry = () => {
-    setSalaries([...salaries, { amount: '', frequency: 'yearly' }]);
+    setSalaries([...salaries, { amount: '', frequency: selectedFrequency }]);
   };
 
   const removeSalaryEntry = (index: number) => {
@@ -260,21 +268,19 @@ export const AverageSalaryCalculator: React.FC = () => {
     }
   };
 
-  // Compute values
-  const annualisedValues = salaries.map(s => {
-    const amt = parseFloat(s.amount) || 0;
-    const mult = freqMultipliers[s.frequency] || 1;
-    return amt * mult;
-  });
+  const selectedFrequency = salaries[0]?.frequency || 'yearly';
+  const selectedMultiplier = freqMultipliers[selectedFrequency] || 1;
+  const salaryAmounts = salaries.map(s => parseFloat(s.amount) || 0);
+  const annualisedValues = salaryAmounts.map(amount => amount * selectedMultiplier);
 
   // Filter & average
-  let valuesToAverage = [...annualisedValues];
+  let valuesToAverage = [...salaryAmounts];
   let ignoredIndices: number[] = [];
 
   if (valuesToAverage.length > 1) {
     if (ignoreHighest) {
       const maxVal = Math.max(...valuesToAverage);
-      const maxIdx = annualisedValues.indexOf(maxVal);
+      const maxIdx = salaryAmounts.indexOf(maxVal);
       ignoredIndices.push(maxIdx);
       // Remove one occurrence of max
       const idxToRemove = valuesToAverage.indexOf(maxVal);
@@ -282,7 +288,7 @@ export const AverageSalaryCalculator: React.FC = () => {
     }
     if (ignoreLowest && valuesToAverage.length > 1) {
       const minVal = Math.min(...valuesToAverage);
-      const minIdx = annualisedValues.indexOf(minVal);
+      const minIdx = salaryAmounts.indexOf(minVal);
       if (!ignoredIndices.includes(minIdx)) ignoredIndices.push(minIdx);
       const idxToRemove = valuesToAverage.indexOf(minVal);
       if (idxToRemove !== -1) valuesToAverage.splice(idxToRemove, 1);
@@ -290,14 +296,17 @@ export const AverageSalaryCalculator: React.FC = () => {
   }
 
   const sum = valuesToAverage.reduce((a, b) => a + b, 0);
-  const averageAnnual = valuesToAverage.length > 0 ? sum / valuesToAverage.length : 0;
+  const averageEnteredAmount = valuesToAverage.length > 0 ? sum / valuesToAverage.length : 0;
+  const averageAnnual = averageEnteredAmount * selectedMultiplier;
   const averageMonthly = averageAnnual / 12;
+  const averageCalculationText = `(${valuesToAverage.map(value => formatCurrency(value)).join(' + ') || formatCurrency(0)}) / ${valuesToAverage.length || 1} = ${formatCurrency(averageEnteredAmount)} ${frequencyLabels[selectedFrequency] || selectedFrequency}; x ${selectedMultiplier} = ${formatCurrency(averageAnnual)} annual`;
 
   const handleCopy = () => {
     const text = `Average Salary Calculator Results:
 - Salaries Entered: ${salaries.map(s => `${formatCurrency(s.amount)} (${s.frequency})`).join(', ')}
 - Ignore Highest: ${ignoreHighest ? 'Yes' : 'No'}
 - Ignore Lowest: ${ignoreLowest ? 'Yes' : 'No'}
+- Calculation: ${averageCalculationText}
 - Final Average Annual Income: ${formatCurrency(averageAnnual)}
 - Final Average Monthly Income: ${formatCurrency(averageMonthly)}`;
 
@@ -437,7 +446,7 @@ export const AverageSalaryCalculator: React.FC = () => {
               {formatCurrency(averageAnnual)}
             </div>
             <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {formatCurrency(sum)} / {valuesToAverage.length || 1} counted entries = {formatCurrency(averageAnnual)}
+              {averageCalculationText}
             </p>
             <div className="h-[1px] bg-border my-6"></div>
             
