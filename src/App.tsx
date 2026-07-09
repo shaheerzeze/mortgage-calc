@@ -7,6 +7,7 @@ import { Dashboard } from './components/Dashboard';
 import { 
   SalaryAnnualiser, 
   AverageSalaryCalculator, 
+  CustomSalaryCalculator,
   IncomeBuilder 
 } from './components/calculators/SalaryCalculators';
 import { 
@@ -42,9 +43,17 @@ const calculators = [
     id: 'average-salary', 
     name: 'Average Salary', 
     category: 'salary', 
-    description: 'Average up to 3 salaries with options to ignore highest and lowest values.', 
+    description: 'Average salaries with options to ignore highest and lowest values.', 
     path: '/salary/average', 
     component: AverageSalaryCalculator 
+  },
+  {
+    id: 'custom-salary',
+    name: 'Custom Salary',
+    category: 'salary',
+    description: 'Add manual salary figures by frequency and calculate annual and monthly totals.',
+    path: '/salary/custom',
+    component: CustomSalaryCalculator
   },
   { 
     id: 'income-builder', 

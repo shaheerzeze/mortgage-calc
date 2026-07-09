@@ -340,7 +340,7 @@ export const AverageSalaryCalculator: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Inputs */}
         <div className="space-y-4">
-          <div className="space-y-3 max-h-[340px] overflow-y-auto pr-1">
+          <div className="space-y-3">
             {salaries.map((salary, index) => {
               const isIgnored = ignoredIndices.includes(index);
               return (
@@ -427,7 +427,7 @@ export const AverageSalaryCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50 md:sticky md:top-28 self-start">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Annualised Average
@@ -460,7 +460,250 @@ export const AverageSalaryCalculator: React.FC = () => {
   );
 };
 
-// 3. INCOME BUILDER
+// 3. CUSTOM SALARY CALCULATOR
+export const CustomSalaryCalculator: React.FC = () => {
+  const { addHistory } = useApp();
+  const [frequency, setFrequency] = useState<string>('monthly');
+  const [customMultiplier, setCustomMultiplier] = useState<string>('12');
+  const [entryCount, setEntryCount] = useState<number>(3);
+  const [customEntryCount, setCustomEntryCount] = useState<string>('3');
+  const [amounts, setAmounts] = useState<string[]>(['2500', '3000', '2750']);
+  const [copied, setCopied] = useState(false);
+
+  const freqMultipliers: Record<string, number> = {
+    weekly: 52,
+    fortnightly: 26,
+    'four-weekly': 13,
+    monthly: 12,
+    quarterly: 4,
+    'half-yearly': 2,
+    yearly: 1,
+  };
+
+  const frequencyOptions = [
+    { value: 'weekly', label: 'Weekly' },
+    { value: 'fortnightly', label: 'Fortnightly' },
+    { value: 'four-weekly', label: 'Four Weekly' },
+    { value: 'monthly', label: 'Monthly' },
+    { value: 'quarterly', label: 'Quarterly' },
+    { value: 'half-yearly', label: 'Half Yearly' },
+    { value: 'yearly', label: 'Yearly' },
+    { value: 'custom', label: 'Custom' },
+  ];
+
+  const multiplier = frequency === 'custom' ? parseFloat(customMultiplier) || 0 : freqMultipliers[frequency] || 0;
+  const numericAmounts = amounts.slice(0, entryCount).map(amount => parseFloat(amount) || 0);
+  const periodTotal = numericAmounts.reduce((total, amount) => total + amount, 0);
+  const annualTotal = periodTotal * multiplier;
+  const monthlyTotal = annualTotal / 12;
+
+  const syncEntryCount = (count: number) => {
+    const nextCount = Math.max(1, Math.min(24, count || 1));
+    setEntryCount(nextCount);
+    setCustomEntryCount(nextCount.toString());
+    setAmounts(current => {
+      const next = [...current];
+      while (next.length < nextCount) next.push('');
+      return next.slice(0, nextCount);
+    });
+  };
+
+  const handleAmountChange = (index: number, value: string) => {
+    setAmounts(current => current.map((amount, i) => i === index ? value : amount));
+  };
+
+  const handleCopy = () => {
+    const lines = numericAmounts
+      .map((amount, index) => `- Entry ${index + 1}: ${formatCurrency(amount)} (${frequency})`)
+      .join('\n');
+
+    const text = `Custom Salary Calculator Results:
+${lines}
+-----------------------------
+- Multiplier: ${multiplier}
+- Total Per Period: ${formatCurrency(periodTotal)}
+- Total Annual Figure: ${formatCurrency(annualTotal)}
+- Monthly Figure: ${formatCurrency(monthlyTotal)}`;
+
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+  };
+
+  const handleReset = () => {
+    setFrequency('monthly');
+    setCustomMultiplier('12');
+    setAmounts(['2500', '3000', '2750']);
+    syncEntryCount(3);
+  };
+
+  useEffect(() => {
+    if (annualTotal > 0) {
+      const timer = setTimeout(() => {
+        addHistory(
+          'custom-salary',
+          'Custom Salary',
+          { amounts: numericAmounts, frequency, multiplier },
+          { annualTotal, monthlyTotal, periodTotal }
+        );
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [amounts, frequency, customMultiplier, entryCount]);
+
+  return (
+    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+      <CalculatorHeader
+        title="Custom Salary"
+        calculatorId="custom-salary"
+        onReset={handleReset}
+        onCopy={handleCopy}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-7 space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Frequency
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {frequencyOptions.map((chip) => (
+                <button
+                  key={chip.value}
+                  type="button"
+                  onClick={() => setFrequency(chip.value)}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                    frequency === chip.value
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {frequency === 'custom' && (
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                Custom Multiplier
+              </label>
+              <input
+                type="number"
+                value={customMultiplier}
+                onChange={(e) => setCustomMultiplier(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                placeholder="e.g. 12"
+              />
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Number of Salary Fields
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {[1, 2, 3, 4, 5, 6].map((count) => (
+                <button
+                  key={count}
+                  type="button"
+                  onClick={() => syncEntryCount(count)}
+                  className={`min-w-10 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                    entryCount === count
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  {count}
+                </button>
+              ))}
+              <div className={`flex items-center gap-1 rounded-lg border px-2 py-1 ${
+                ![1, 2, 3, 4, 5, 6].includes(entryCount)
+                  ? 'bg-primary/10 border-primary'
+                  : 'border-border bg-background'
+              }`}>
+                <span className="text-xs font-semibold text-muted-foreground">Custom</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="24"
+                  value={customEntryCount}
+                  onChange={(e) => {
+                    setCustomEntryCount(e.target.value);
+                    syncEntryCount(parseInt(e.target.value) || 1);
+                  }}
+                  className="w-14 bg-transparent text-sm font-semibold text-foreground focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {amounts.slice(0, entryCount).map((amount, index) => (
+              <div key={index} className="p-3 rounded-lg border border-border bg-background">
+                <label className="block text-xs font-semibold text-muted-foreground mb-2">
+                  Salary Entry #{index + 1}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">GBP</span>
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => handleAmountChange(index, e.target.value)}
+                    className="w-full pl-12 pr-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                    placeholder="Amount"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="lg:col-span-5 bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50 lg:sticky lg:top-28 self-start">
+          <div>
+            <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
+              Total Annual Figure
+            </h3>
+            <div className="text-4xl font-extrabold text-primary tracking-tight">
+              {formatCurrency(annualTotal)}
+            </div>
+
+            <div className="h-[1px] bg-border my-6"></div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Monthly Figure:</span>
+                <span className="font-bold text-foreground">{formatCurrency(monthlyTotal)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Total Per Period:</span>
+                <span className="font-semibold text-foreground">{formatCurrency(periodTotal)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Multiplier:</span>
+                <span className="font-semibold text-foreground">{multiplier}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Fields Counted:</span>
+                <span className="font-semibold text-foreground">{entryCount}</span>
+              </div>
+            </div>
+          </div>
+
+          {copied && (
+            <div className="mt-6 p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded text-center text-xs font-semibold flex items-center justify-center gap-1">
+              <Sparkles className="w-3 h-3" /> Results copied to clipboard!
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 4. INCOME BUILDER
 interface IncomeItem {
   key: string;
   name: string;
