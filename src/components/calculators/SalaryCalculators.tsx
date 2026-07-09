@@ -464,13 +464,12 @@ export const AverageSalaryCalculator: React.FC = () => {
 export const CustomSalaryCalculator: React.FC = () => {
   const { addHistory } = useApp();
   const [frequency, setFrequency] = useState<string>('monthly');
-  const [customMultiplier, setCustomMultiplier] = useState<string>('12');
-  const [entryCount, setEntryCount] = useState<number>(3);
-  const [customEntryCount, setCustomEntryCount] = useState<string>('3');
-  const [amounts, setAmounts] = useState<string[]>(['2500', '3000', '2750']);
+  const [entryCount, setEntryCount] = useState<number>(12);
+  const [customEntryCount, setCustomEntryCount] = useState<string>('12');
+  const [amounts, setAmounts] = useState<string[]>(Array(12).fill(''));
   const [copied, setCopied] = useState(false);
 
-  const freqMultipliers: Record<string, number> = {
+  const frequencyFieldCounts: Record<string, number> = {
     weekly: 52,
     fortnightly: 26,
     'four-weekly': 13,
@@ -491,14 +490,12 @@ export const CustomSalaryCalculator: React.FC = () => {
     { value: 'custom', label: 'Custom' },
   ];
 
-  const multiplier = frequency === 'custom' ? parseFloat(customMultiplier) || 0 : freqMultipliers[frequency] || 0;
   const numericAmounts = amounts.slice(0, entryCount).map(amount => parseFloat(amount) || 0);
-  const periodTotal = numericAmounts.reduce((total, amount) => total + amount, 0);
-  const annualTotal = periodTotal * multiplier;
+  const annualTotal = numericAmounts.reduce((total, amount) => total + amount, 0);
   const monthlyTotal = annualTotal / 12;
 
   const syncEntryCount = (count: number) => {
-    const nextCount = Math.max(1, Math.min(24, count || 1));
+    const nextCount = Math.max(1, Math.min(52, count || 1));
     setEntryCount(nextCount);
     setCustomEntryCount(nextCount.toString());
     setAmounts(current => {
@@ -506,6 +503,13 @@ export const CustomSalaryCalculator: React.FC = () => {
       while (next.length < nextCount) next.push('');
       return next.slice(0, nextCount);
     });
+  };
+
+  const handleFrequencyChange = (nextFrequency: string) => {
+    setFrequency(nextFrequency);
+    if (nextFrequency in frequencyFieldCounts) {
+      syncEntryCount(frequencyFieldCounts[nextFrequency]);
+    }
   };
 
   const handleAmountChange = (index: number, value: string) => {
@@ -520,8 +524,7 @@ export const CustomSalaryCalculator: React.FC = () => {
     const text = `Custom Salary Calculator Results:
 ${lines}
 -----------------------------
-- Multiplier: ${multiplier}
-- Total Per Period: ${formatCurrency(periodTotal)}
+- Fields Counted: ${entryCount}
 - Total Annual Figure: ${formatCurrency(annualTotal)}
 - Monthly Figure: ${formatCurrency(monthlyTotal)}`;
 
@@ -533,9 +536,8 @@ ${lines}
 
   const handleReset = () => {
     setFrequency('monthly');
-    setCustomMultiplier('12');
-    setAmounts(['2500', '3000', '2750']);
-    syncEntryCount(3);
+    setAmounts(Array(12).fill(''));
+    syncEntryCount(12);
   };
 
   useEffect(() => {
@@ -544,13 +546,13 @@ ${lines}
         addHistory(
           'custom-salary',
           'Custom Salary',
-          { amounts: numericAmounts, frequency, multiplier },
-          { annualTotal, monthlyTotal, periodTotal }
+          { amounts: numericAmounts, frequency, fields: entryCount },
+          { annualTotal, monthlyTotal }
         );
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [amounts, frequency, customMultiplier, entryCount]);
+  }, [amounts, frequency, entryCount]);
 
   return (
     <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
@@ -572,7 +574,7 @@ ${lines}
                 <button
                   key={chip.value}
                   type="button"
-                  onClick={() => setFrequency(chip.value)}
+                  onClick={() => handleFrequencyChange(chip.value)}
                   className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                     frequency === chip.value
                       ? 'bg-primary text-primary-foreground border-primary shadow-sm'
@@ -586,20 +588,6 @@ ${lines}
           </div>
 
           {frequency === 'custom' && (
-            <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
-                Custom Multiplier
-              </label>
-              <input
-                type="number"
-                value={customMultiplier}
-                onChange={(e) => setCustomMultiplier(e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
-                placeholder="e.g. 12"
-              />
-            </div>
-          )}
-
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-2">
               Number of Salary Fields
@@ -628,7 +616,7 @@ ${lines}
                 <input
                   type="number"
                   min="1"
-                  max="24"
+                  max="52"
                   value={customEntryCount}
                   onChange={(e) => {
                     setCustomEntryCount(e.target.value);
@@ -639,12 +627,13 @@ ${lines}
               </div>
             </div>
           </div>
+          )}
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {amounts.slice(0, entryCount).map((amount, index) => (
               <div key={index} className="p-3 rounded-lg border border-border bg-background">
                 <label className="block text-xs font-semibold text-muted-foreground mb-2">
-                  Salary Entry #{index + 1}
+                  {frequency === 'monthly' ? 'Month' : frequency === 'weekly' ? 'Week' : frequency === 'fortnightly' ? 'Fortnight' : frequency === 'four-weekly' ? 'Four-week period' : frequency === 'quarterly' ? 'Quarter' : frequency === 'half-yearly' ? 'Half-year period' : 'Salary Entry'} #{index + 1}
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">GBP</span>
@@ -678,12 +667,8 @@ ${lines}
                 <span className="font-bold text-foreground">{formatCurrency(monthlyTotal)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Total Per Period:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(periodTotal)}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Multiplier:</span>
-                <span className="font-semibold text-foreground">{multiplier}</span>
+                <span className="text-muted-foreground">Frequency:</span>
+                <span className="font-semibold text-foreground capitalize">{frequency.replace('-', ' ')}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Fields Counted:</span>
