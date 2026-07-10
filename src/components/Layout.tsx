@@ -266,7 +266,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
         }`}>
           {isHomePage && (
             <div
-              className="pointer-events-none absolute inset-0 z-0 bg-[url('/shaheer-banner.png')] bg-cover bg-center bg-no-repeat opacity-[0.08]"
+              className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.08]"
+              style={{ backgroundImage: `url(${import.meta.env.BASE_URL}shaheer-banner.png)` }}
               aria-hidden="true"
             />
           )}
