@@ -160,3 +160,19 @@ input[type=number]::-webkit-outer-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+/* Split view keeps each calculator readable inside narrow side-by-side panes. */
+.split-pane .md\:grid-cols-2,
+.split-pane .lg\:grid-cols-12 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.split-pane .text-5xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.split-pane .text-4xl {
+  font-size: 2rem;
+  line-height: 2.25rem;
+}

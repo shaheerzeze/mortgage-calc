@@ -4,6 +4,7 @@ import { formatCurrency } from '../../utils/mathHelpers';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import { Sparkles, Copy, RotateCcw, Star, HelpCircle, Plus, Trash2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { CopyableResult } from '../CopyableResult';
 
 export const CalculatorHeader: React.FC<{ title: string; calculatorId: string; onReset: () => void; onCopy: () => void }> = ({ title, calculatorId, onReset, onCopy }) => {
   const { favorites, toggleFavorite } = useApp();
@@ -184,9 +185,10 @@ export const SalaryAnnualiser: React.FC = () => {
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Annualised Income
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(annualSalary)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(annualSalary)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               {formatCurrency(numAmount)} x {numMultiplier} = {formatCurrency(annualSalary)}
             </p>
@@ -195,11 +197,11 @@ export const SalaryAnnualiser: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Monthly Equivalent</span>
-                <span className="text-lg font-bold text-foreground">{formatCurrency(monthlySalary)}</span>
+                <CopyableResult value={formatCurrency(monthlySalary)} className="text-lg font-bold text-foreground" />
               </div>
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Weekly Equivalent</span>
-                <span className="text-lg font-bold text-foreground">{formatCurrency(weeklySalary)}</span>
+                <CopyableResult value={formatCurrency(weeklySalary)} className="text-lg font-bold text-foreground" />
               </div>
             </div>
           </div>
@@ -443,9 +445,10 @@ export const AverageSalaryCalculator: React.FC = () => {
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Annualised Average
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(averageAnnual)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(averageAnnual)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               {averageCalculationText}
             </p>
@@ -454,11 +457,11 @@ export const AverageSalaryCalculator: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Monthly Average</span>
-                <span className="text-lg font-bold text-foreground">{formatCurrency(averageMonthly)}</span>
+                <CopyableResult value={formatCurrency(averageMonthly)} className="text-lg font-bold text-foreground" />
               </div>
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Entries Counted</span>
-                <span className="text-lg font-bold text-foreground">{valuesToAverage.length} / {salaries.length}</span>
+                <CopyableResult value={`${valuesToAverage.length} / ${salaries.length}`} className="text-lg font-bold text-foreground" />
               </div>
             </div>
           </div>
@@ -649,9 +652,10 @@ ${lines}
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Total Annual Figure
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(annualTotal)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(annualTotal)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               Sum of {entryCount} entered {frequency.replace('-', ' ')} fields = {formatCurrency(annualTotal)}
             </p>
@@ -661,7 +665,7 @@ ${lines}
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Monthly Figure:</span>
-                <span className="font-bold text-foreground">{formatCurrency(monthlyTotal)}</span>
+                <CopyableResult value={formatCurrency(monthlyTotal)} className="font-bold text-foreground" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Frequency:</span>
@@ -669,7 +673,7 @@ ${lines}
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Fields Counted:</span>
-                <span className="font-semibold text-foreground">{entryCount}</span>
+                <CopyableResult value={entryCount} className="font-semibold text-foreground" />
               </div>
             </div>
           </div>
@@ -827,9 +831,10 @@ ${breakDownText}
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Verified Annual Income
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(totalVerified)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(totalVerified)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               Accepted income total = sum of each declared amount x lender allowance %
             </p>
@@ -839,17 +844,18 @@ ${breakDownText}
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Total Declared Income:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(totalRaw)}</span>
+                <CopyableResult value={formatCurrency(totalRaw)} className="font-semibold text-foreground" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Lender Applied Deductions:</span>
-                <span className="font-semibold text-red-500">-{formatCurrency(totalRaw - totalVerified)}</span>
+                <CopyableResult value={`-${formatCurrency(totalRaw - totalVerified)}`} className="font-semibold text-red-500" />
               </div>
               <div className="flex justify-between items-center text-sm border-t border-border pt-3">
                 <span className="font-medium text-foreground">Net Lender Acceptance:</span>
-                <span className="font-bold text-accent">
-                  {totalRaw > 0 ? Math.round((totalVerified / totalRaw) * 100) : 100}%
-                </span>
+                <CopyableResult
+                  value={`${totalRaw > 0 ? Math.round((totalVerified / totalRaw) * 100) : 100}%`}
+                  className="font-bold text-accent"
+                />
               </div>
             </div>
           </div>

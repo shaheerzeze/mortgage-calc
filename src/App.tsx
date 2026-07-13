@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
+import { SplitView } from './components/SplitView';
 
 // Calculators
 import { 
@@ -31,6 +32,13 @@ import {
 
 // Full List of Calculators for navigation and search indexing
 const calculators = [
+  {
+    id: 'split-view',
+    name: 'Split View',
+    category: 'utility',
+    description: 'Open two or three calculators side by side.',
+    path: '/split',
+  },
   { 
     id: 'salary-annualiser', 
     name: 'Salary Annualiser', 
@@ -169,15 +177,19 @@ function App() {
           <Routes>
             {/* Dashboard */}
             <Route path="/" element={<Dashboard calculators={calculators} />} />
+            <Route path="/split" element={<SplitView calculators={calculators} />} />
             
             {/* Dynamic calculator routes */}
-            {calculators.map(calc => (
-              <Route 
-                key={calc.id} 
-                path={calc.path} 
-                element={<calc.component />} 
-              />
-            ))}
+            {calculators.filter(calc => calc.component).map(calc => {
+              const CalculatorComponent = calc.component!;
+              return (
+                <Route
+                  key={calc.id}
+                  path={calc.path}
+                  element={<CalculatorComponent />}
+                />
+              );
+            })}
           </Routes>
         </Layout>
       </HashRouter>

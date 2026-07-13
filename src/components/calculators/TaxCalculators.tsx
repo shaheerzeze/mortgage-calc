@@ -5,6 +5,7 @@ import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { CopyableResult } from '../CopyableResult';
 
 type TaxFrequency = 'annual' | 'monthly' | 'weekly' | 'fortnightly' | 'two-weekly' | 'four-weekly' | 'quarterly' | 'half-yearly';
 
@@ -156,9 +157,10 @@ export const TaxEstimator: React.FC = () => {
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               {frequencyLabel} Take-home Pay
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(netForFrequency)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(netForFrequency)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               {formatCurrency(grossInput)} x {frequencyMultiplier} = {formatCurrency(annualGross)} annual; ({formatCurrency(annualGross)} - {formatCurrency(taxDetails.totalIncomeTax)} tax - {formatCurrency(taxDetails.totalNI)} NI) / {frequencyMultiplier} = {formatCurrency(netForFrequency)}
             </p>
@@ -168,23 +170,23 @@ export const TaxEstimator: React.FC = () => {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Personal Allowance:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(taxDetails.personalAllowance)}</span>
+                <CopyableResult value={formatCurrency(taxDetails.personalAllowance)} className="font-semibold text-foreground" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">{frequencyLabel} Income Tax:</span>
-                <span className="font-semibold text-red-500">-{formatCurrency(taxForFrequency)}</span>
+                <CopyableResult value={`-${formatCurrency(taxForFrequency)}`} className="font-semibold text-red-500" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">{frequencyLabel} National Insurance:</span>
-                <span className="font-semibold text-red-500">-{formatCurrency(niForFrequency)}</span>
+                <CopyableResult value={`-${formatCurrency(niForFrequency)}`} className="font-semibold text-red-500" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Annualised Gross:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(annualGross)}</span>
+                <CopyableResult value={formatCurrency(annualGross)} className="font-semibold text-foreground" />
               </div>
               <div className="flex justify-between items-center text-sm border-t border-border pt-3">
                 <span className="font-medium text-foreground">Estimated Net Annual Pay:</span>
-                <span className="font-bold text-accent">{formatCurrency(taxDetails.netAnnual)}</span>
+                <CopyableResult value={formatCurrency(taxDetails.netAnnual)} className="font-bold text-accent" />
               </div>
             </div>
           </div>
@@ -308,9 +310,10 @@ export const ReverseTaxCalculator: React.FC = () => {
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Estimated Required Gross {frequencyLabel} Salary
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(grossForFrequency)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(grossForFrequency)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               {formatCurrency(numNet)} x {frequencyMultiplier} = {formatCurrency(targetAnnualNet)} annual target net; solved backwards to {formatCurrency(estimatedGross)} gross annual
             </p>
@@ -320,19 +323,19 @@ export const ReverseTaxCalculator: React.FC = () => {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Gross Annual equivalent:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(estimatedGross)}</span>
+                <CopyableResult value={formatCurrency(estimatedGross)} className="font-semibold text-foreground" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Estimated {frequencyLabel} Income Tax:</span>
-                <span className="font-semibold text-red-500">+{formatCurrency(taxForFrequency)}</span>
+                <CopyableResult value={`+${formatCurrency(taxForFrequency)}`} className="font-semibold text-red-500" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Estimated {frequencyLabel} National Insurance:</span>
-                <span className="font-semibold text-red-500">+{formatCurrency(niForFrequency)}</span>
+                <CopyableResult value={`+${formatCurrency(niForFrequency)}`} className="font-semibold text-red-500" />
               </div>
               <div className="flex justify-between items-center text-sm border-t border-border pt-3">
                 <span className="font-medium text-foreground">Target {frequencyLabel} Net Salary:</span>
-                <span className="font-bold text-accent">{formatCurrency(numNet)}</span>
+                <CopyableResult value={formatCurrency(numNet)} className="font-bold text-accent" />
               </div>
             </div>
           </div>
@@ -457,55 +460,55 @@ export const TaxBreakdown: React.FC = () => {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground">Gross Annual Salary:</span>
-              <span className="font-semibold text-foreground">{formatCurrency(gross)}</span>
+              <CopyableResult value={formatCurrency(gross)} className="font-semibold text-foreground" />
             </div>
             
             <div className="h-[1px] bg-border my-1"></div>
             
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground">Untaxed (Personal Allowance):</span>
-              <span className="font-semibold text-foreground">{formatCurrency(taxDetails.personalAllowance)}</span>
+              <CopyableResult value={formatCurrency(taxDetails.personalAllowance)} className="font-semibold text-foreground" />
             </div>
             
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground">Taxable Income:</span>
-              <span className="font-semibold text-foreground">{formatCurrency(taxDetails.taxableIncome)}</span>
+              <CopyableResult value={formatCurrency(taxDetails.taxableIncome)} className="font-semibold text-foreground" />
             </div>
 
             <div className="h-[1px] bg-border my-1"></div>
 
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground pl-3 border-l border-red-500/30">Basic Rate (20%):</span>
-              <span className="font-medium text-foreground">{formatCurrency(taxDetails.basicRateTax)}</span>
+              <CopyableResult value={formatCurrency(taxDetails.basicRateTax)} className="font-medium text-foreground" />
             </div>
 
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground pl-3 border-l border-red-500/30">Higher Rate (40%):</span>
-              <span className="font-medium text-foreground">{formatCurrency(taxDetails.higherRateTax)}</span>
+              <CopyableResult value={formatCurrency(taxDetails.higherRateTax)} className="font-medium text-foreground" />
             </div>
 
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground pl-3 border-l border-red-500/30">Additional Rate (45%):</span>
-              <span className="font-medium text-foreground">{formatCurrency(taxDetails.additionalRateTax)}</span>
+              <CopyableResult value={formatCurrency(taxDetails.additionalRateTax)} className="font-medium text-foreground" />
             </div>
 
             <div className="h-[1px] bg-border my-1"></div>
 
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground pl-3 border-l border-amber-500/30">National Insurance (8%):</span>
-              <span className="font-medium text-foreground">{formatCurrency(taxDetails.niBasicRate)}</span>
+              <CopyableResult value={formatCurrency(taxDetails.niBasicRate)} className="font-medium text-foreground" />
             </div>
 
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground pl-3 border-l border-amber-500/30">National Insurance (2%):</span>
-              <span className="font-medium text-foreground">{formatCurrency(taxDetails.niHigherRate)}</span>
+              <CopyableResult value={formatCurrency(taxDetails.niHigherRate)} className="font-medium text-foreground" />
             </div>
 
             <div className="h-[1px] bg-border my-2"></div>
 
             <div className="flex justify-between items-center py-1 text-base font-bold">
               <span className="text-foreground">Net Pay (Take-Home):</span>
-              <span className="text-accent">{formatCurrency(taxDetails.netAnnual)}</span>
+              <CopyableResult value={formatCurrency(taxDetails.netAnnual)} className="text-accent" />
             </div>
             <p className="pt-2 text-xs font-medium text-muted-foreground">
               Net pay = {formatCurrency(gross)} - {formatCurrency(taxDetails.totalIncomeTax)} tax - {formatCurrency(taxDetails.totalNI)} NI

@@ -4,6 +4,7 @@ import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles, Calendar, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { CopyableResult } from '../CopyableResult';
 
 // 1. PERCENTAGE CALCULATORS (Percentage of, Percentage Change, Difference)
 export const PercentageCalculators: React.FC = () => {
@@ -207,16 +208,18 @@ export const PercentageCalculators: React.FC = () => {
             </h3>
             
             {activeTab === 'of' && (
-              <div className="text-4xl font-extrabold text-primary tracking-tight">
-                {ofResult.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
+              <CopyableResult
+                value={ofResult.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                className="text-4xl font-extrabold text-primary tracking-tight"
+              />
             )}
 
             {activeTab === 'change' && (
               <div className="flex items-baseline gap-2">
-                <span className={`text-5xl font-extrabold tracking-tight ${changeResult >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                  {changeResult >= 0 ? '+' : ''}{changeResult.toFixed(2)}%
-                </span>
+                <CopyableResult
+                  value={`${changeResult >= 0 ? '+' : ''}${changeResult.toFixed(2)}%`}
+                  className={`text-5xl font-extrabold tracking-tight ${changeResult >= 0 ? 'text-emerald-600' : 'text-red-500'}`}
+                />
               </div>
             )}
 
@@ -224,11 +227,11 @@ export const PercentageCalculators: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <span className="block text-xs font-medium text-muted-foreground">Absolute Difference</span>
-                  <span className="text-3xl font-extrabold text-primary">{diffAbs.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                  <CopyableResult value={diffAbs.toLocaleString(undefined, { maximumFractionDigits: 2 })} className="text-3xl font-extrabold text-primary" />
                 </div>
                 <div>
                   <span className="block text-xs font-medium text-muted-foreground">Percentage Difference (of A)</span>
-                  <span className="text-xl font-bold text-foreground">{diffPct.toFixed(2)}%</span>
+                  <CopyableResult value={`${diffPct.toFixed(2)}%`} className="text-xl font-bold text-foreground" />
                 </div>
               </div>
             )}
@@ -371,12 +374,14 @@ export const AgeCalculator: React.FC = () => {
             </h3>
             {isValid ? (
               <div className="space-y-1">
-                <div className="text-4xl font-extrabold text-primary tracking-tight">
-                  {age.years} <span className="text-2xl font-semibold text-muted-foreground">Years</span>
-                </div>
-                <div className="text-xl font-bold text-foreground">
-                  {age.months} Months, {age.days} Days
-                </div>
+                <CopyableResult
+                  value={`${age.years} Years`}
+                  className="text-4xl font-extrabold text-primary tracking-tight"
+                />
+                <CopyableResult
+                  value={`${age.months} Months, ${age.days} Days`}
+                  className="text-xl font-bold text-foreground"
+                />
               </div>
             ) : (
               <div className="text-sm font-medium text-red-500">Please enter a valid Date of Birth before target date.</div>
@@ -525,15 +530,17 @@ export const MortgageEndDateCalculator: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <span className="block text-xs font-medium text-muted-foreground">Estimated End Date</span>
-                  <span className="text-2xl font-extrabold text-primary">
-                    {endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </span>
+                  <CopyableResult
+                    value={endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    className="text-2xl font-extrabold text-primary"
+                  />
                 </div>
                 <div>
                   <span className="block text-xs font-medium text-muted-foreground">Client Age at End Date</span>
-                  <span className={`text-3xl font-extrabold ${isOverLimit ? 'text-amber-500' : 'text-foreground'}`}>
-                    {clientAgeAtEnd.toFixed(1)} years old
-                  </span>
+                  <CopyableResult
+                    value={`${clientAgeAtEnd.toFixed(1)} years old`}
+                    className={`text-3xl font-extrabold ${isOverLimit ? 'text-amber-500' : 'text-foreground'}`}
+                  />
                 </div>
 
                 {isOverLimit && (
@@ -672,17 +679,18 @@ export const DateDifferenceCalculator: React.FC = () => {
             </h3>
             {isValid ? (
               <div className="space-y-4">
-                <div className="text-3xl font-extrabold text-primary tracking-tight">
-                  {diff.years}y, {diff.months}m, {diff.days}d
-                </div>
+                <CopyableResult
+                  value={`${diff.years}y, ${diff.months}m, ${diff.days}d`}
+                  className="text-3xl font-extrabold text-primary tracking-tight"
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="block text-xs font-medium text-muted-foreground">Total Days</span>
-                    <span className="text-lg font-bold text-foreground">{totalDays.toLocaleString()}</span>
+                    <CopyableResult value={totalDays.toLocaleString()} className="text-lg font-bold text-foreground" />
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-muted-foreground">Total Weeks</span>
-                    <span className="text-lg font-bold text-foreground">{totalWeeks.toLocaleString()}</span>
+                    <CopyableResult value={totalWeeks.toLocaleString()} className="text-lg font-bold text-foreground" />
                   </div>
                 </div>
               </div>

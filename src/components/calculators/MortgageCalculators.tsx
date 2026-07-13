@@ -5,6 +5,7 @@ import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { CopyableResult } from '../CopyableResult';
 
 // 1. LTV CALCULATOR
 export const LtvCalculator: React.FC = () => {
@@ -229,7 +230,7 @@ export const LtvCalculator: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Property Value</span>
-                <span className="text-2xl font-bold text-foreground">{formatCurrency(numVal)}</span>
+                <CopyableResult value={formatCurrency(numVal)} className="text-2xl font-bold text-foreground" />
                 <p className="mt-1 text-xs font-medium text-muted-foreground">
                   LTV = {formatCurrency(numLoan)} / {formatCurrency(numVal)} x 100 = {numLtv.toFixed(2)}%
                 </p>
@@ -237,21 +238,21 @@ export const LtvCalculator: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <span className="block text-xs font-medium text-muted-foreground">Loan Amount</span>
-                  <span className="text-lg font-bold text-foreground">{formatCurrency(numLoan)}</span>
+                  <CopyableResult value={formatCurrency(numLoan)} className="text-lg font-bold text-foreground" />
                 </div>
                 <div>
                   <span className="block text-xs font-medium text-muted-foreground">LTV Ratio</span>
-                  <span className="text-lg font-bold text-accent">{numLtv.toFixed(2)}%</span>
+                  <CopyableResult value={`${numLtv.toFixed(2)}%`} className="text-lg font-bold text-accent" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <span className="block text-xs font-medium text-muted-foreground">Deposit Paid</span>
-                  <span className="text-lg font-bold text-foreground">{formatCurrency(numDeposit)}</span>
+                  <CopyableResult value={formatCurrency(numDeposit)} className="text-lg font-bold text-foreground" />
                 </div>
                 <div>
                   <span className="block text-xs font-medium text-muted-foreground">Deposit Percentage</span>
-                  <span className="text-lg font-bold text-foreground">{numDepositPercent.toFixed(2)}%</span>
+                  <CopyableResult value={`${numDepositPercent.toFixed(2)}%`} className="text-lg font-bold text-foreground" />
                 </div>
               </div>
             </div>
@@ -422,9 +423,10 @@ export const DepositCalculator: React.FC = () => {
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Resulting Loan Amount
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(loanAmount)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(loanAmount)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               {formatCurrency(numVal)} - {formatCurrency(numDeposit)} = {formatCurrency(loanAmount)}
             </p>
@@ -434,11 +436,11 @@ export const DepositCalculator: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Deposit Percentage</span>
-                <span className="text-lg font-bold text-foreground">{(numVal > 0 ? (numDeposit / numVal) * 100 : 0).toFixed(2)}%</span>
+                <CopyableResult value={`${(numVal > 0 ? (numDeposit / numVal) * 100 : 0).toFixed(2)}%`} className="text-lg font-bold text-foreground" />
               </div>
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Lending (LTV)</span>
-                <span className="text-lg font-bold text-foreground">{numLtv}%</span>
+                <CopyableResult value={`${numLtv}%`} className="text-lg font-bold text-foreground" />
               </div>
             </div>
           </div>
@@ -578,9 +580,10 @@ export const LtiCalculator: React.FC = () => {
               LTI Multiplier
             </h3>
             <div className="flex items-baseline gap-2">
-              <span className="text-5xl font-extrabold text-primary tracking-tight">
-                {ltiRatio.toFixed(2)}x
-              </span>
+              <CopyableResult
+                value={`${ltiRatio.toFixed(2)}x`}
+                className="text-5xl font-extrabold text-primary tracking-tight"
+              />
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 ltiRatio <= 4.49 ? 'bg-emerald-500/10 text-emerald-500' :
                 ltiRatio <= 4.99 ? 'bg-amber-500/10 text-amber-500' :
@@ -599,15 +602,15 @@ export const LtiCalculator: React.FC = () => {
               <span className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Lender Cap Estimates</span>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Standard (4.5x Combined):</span>
-                <span className="font-semibold text-foreground">{formatCurrency(maxLoan4_5)}</span>
+                <CopyableResult value={formatCurrency(maxLoan4_5)} className="font-semibold text-foreground" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">High Income (5.0x Combined):</span>
-                <span className="font-semibold text-foreground">{formatCurrency(maxLoan5_0)}</span>
+                <CopyableResult value={formatCurrency(maxLoan5_0)} className="font-semibold text-foreground" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Extraordinary / Bespoke (5.5x):</span>
-                <span className="font-semibold text-foreground">{formatCurrency(maxLoan5_5)}</span>
+                <CopyableResult value={formatCurrency(maxLoan5_5)} className="font-semibold text-foreground" />
               </div>
             </div>
           </div>
@@ -787,9 +790,10 @@ export const MortgageRepaymentCalculator: React.FC = () => {
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Monthly Repayment (P+I)
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(monthlyPayment)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(monthlyPayment)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               Payment uses {formatCurrency(P)} over {n} months at {(annualR / 12).toFixed(3)}% monthly interest
             </p>
@@ -822,11 +826,11 @@ export const MortgageRepaymentCalculator: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Total Interest Paid</span>
-                <span className="text-lg font-bold text-foreground">{formatCurrency(totalInterest)}</span>
+                <CopyableResult value={formatCurrency(totalInterest)} className="text-lg font-bold text-foreground" />
               </div>
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Total Paid Over Term</span>
-                <span className="text-lg font-bold text-foreground">{formatCurrency(totalPaid)}</span>
+                <CopyableResult value={formatCurrency(totalPaid)} className="text-lg font-bold text-foreground" />
               </div>
             </div>
           </div>
@@ -1009,9 +1013,10 @@ export const InterestOnlyCalculator: React.FC = () => {
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Monthly Payment (Interest Only)
             </h3>
-            <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(monthlyPayment)}
-            </div>
+            <CopyableResult
+              value={formatCurrency(monthlyPayment)}
+              className="text-4xl font-extrabold text-primary tracking-tight"
+            />
             <p className="mt-2 text-xs font-medium text-muted-foreground">
               {formatCurrency(P)} x {annualR}% / 12 = {formatCurrency(monthlyPayment)}
             </p>
@@ -1021,15 +1026,15 @@ export const InterestOnlyCalculator: React.FC = () => {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Total Interest Paid:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(totalInterest)}</span>
+                <CopyableResult value={formatCurrency(totalInterest)} className="font-semibold text-foreground" />
               </div>
               <div className="flex justify-between items-center text-sm border-t border-border pt-3">
                 <span className="text-muted-foreground">Equivalent Repayment Monthly Payment:</span>
-                <span className="font-medium text-muted-foreground line-through">{formatCurrency(repaymentMonthly)}</span>
+                <CopyableResult value={formatCurrency(repaymentMonthly)} className="font-medium text-muted-foreground line-through" />
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Monthly Savings (Interest Only):</span>
-                <span className="font-bold text-emerald-600">-{formatCurrency(repaymentMonthly - monthlyPayment)}</span>
+                <CopyableResult value={`-${formatCurrency(repaymentMonthly - monthlyPayment)}`} className="font-bold text-emerald-600" />
               </div>
             </div>
           </div>

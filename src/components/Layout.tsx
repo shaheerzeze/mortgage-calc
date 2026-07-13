@@ -2,7 +2,29 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { parseExpression } from '../utils/mathHelpers';
 import { 
-  Calculator, Search, Moon, Sun, Sidebar as SidebarIcon, Star, Copy
+  ArrowLeftRight,
+  BadgePoundSterling,
+  Banknote,
+  Calculator,
+  CalendarDays,
+  CalendarRange,
+  ChartNoAxesCombined,
+  ChartPie,
+  Columns2,
+  House,
+  Landmark,
+  ListPlus,
+  Percent,
+  PiggyBank,
+  ReceiptText,
+  Scale,
+  Search,
+  Moon,
+  Sun,
+  Sidebar as SidebarIcon,
+  Star,
+  Copy,
+  Wallet
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -39,6 +61,26 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
     { key: 'tax', name: 'Tax Tools' },
     { key: 'utility', name: 'Utility Tools' }
   ];
+
+  const navVisuals: Record<string, { icon: React.ComponentType<{ className?: string }>; short: string }> = {
+    'salary-annualiser': { icon: Banknote, short: 'Annual' },
+    'average-salary': { icon: ChartNoAxesCombined, short: 'Average' },
+    'custom-salary': { icon: ListPlus, short: 'Custom' },
+    'income-builder': { icon: Wallet, short: 'Income' },
+    'ltv-calculator': { icon: Percent, short: 'LTV' },
+    'deposit-calculator': { icon: PiggyBank, short: 'Deposit' },
+    'lti-calculator': { icon: Scale, short: 'LTI' },
+    'mortgage-repayment': { icon: House, short: 'Repay' },
+    'interest-only-repayment': { icon: Landmark, short: 'Interest' },
+    'tax-estimator': { icon: BadgePoundSterling, short: 'Tax' },
+    'reverse-tax': { icon: ArrowLeftRight, short: 'Reverse' },
+    'tax-breakdown': { icon: ReceiptText, short: 'Bands' },
+    'percentage-calculators': { icon: ChartPie, short: 'Percent' },
+    'age-calculator': { icon: CalendarDays, short: 'Age' },
+    'mortgage-end-date': { icon: CalendarRange, short: 'End' },
+    'date-difference': { icon: CalendarDays, short: 'Dates' },
+    'split-view': { icon: Columns2, short: 'Split' },
+  };
 
   // Filter calculators by search query
   const filteredCalculators = calculators.filter(calc => {
@@ -160,21 +202,29 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
                 {catCalcs.map(calc => {
                   const isActive = location.pathname === calc.path;
                   const isFav = favorites.includes(calc.id);
+                  const navVisual = navVisuals[calc.id] || { icon: Calculator, short: calc.name.split(' ')[0] };
+                  const NavIcon = navVisual.icon;
 
                   return (
                     <Link
                       key={calc.id}
                       to={calc.path}
-                      className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                      className={`${sidebarOpen ? 'flex items-center justify-between px-2.5 py-2' : 'flex flex-col items-center justify-center gap-1 px-1 py-2.5 min-h-14'} rounded-lg text-xs font-semibold transition-all ${
                         isActive 
                           ? 'bg-primary text-primary-foreground shadow-sm' 
                           : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                       title={calc.name}
                     >
-                      <div className="flex items-center gap-2 truncate">
-                        <Calculator className="w-3.5 h-3.5 shrink-0" />
-                        {sidebarOpen && <span className="truncate">{calc.name}</span>}
+                      <div className={`${sidebarOpen ? 'flex items-center gap-2 truncate' : 'flex flex-col items-center justify-center gap-1 min-w-0'}`}>
+                        <NavIcon className={`${sidebarOpen ? 'w-3.5 h-3.5' : 'w-4.5 h-4.5'} shrink-0`} />
+                        {sidebarOpen ? (
+                          <span className="truncate">{calc.name}</span>
+                        ) : (
+                          <span className="max-w-full truncate text-[9px] leading-none font-bold tracking-normal">
+                            {navVisual.short}
+                          </span>
+                        )}
                       </div>
                       {sidebarOpen && isFav && (
                         <Star className={`w-3 h-3 ${isActive ? 'text-primary-foreground fill-primary-foreground' : 'text-amber-500 fill-amber-500'}`} />
