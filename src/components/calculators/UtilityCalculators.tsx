@@ -82,7 +82,7 @@ export const PercentageCalculators: React.FC = () => {
   }, [pctX, pctY, changeX, changeY, diffX, diffY, activeTab]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm space-y-6">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm space-y-6">
       <CalculatorHeader
         title="Percentage / Change / Difference"
         calculatorId="percentage-calculators"
@@ -201,7 +201,7 @@ export const PercentageCalculators: React.FC = () => {
         </div>
 
         {/* Tab Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4 font-mono">
               {activeTab === 'of' ? 'Resulting Value' : activeTab === 'change' ? 'Percentage Change' : 'Difference Summary'}
@@ -331,7 +331,7 @@ export const AgeCalculator: React.FC = () => {
   }, [dob, targetDate]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Age Calculator"
         calculatorId="age-calculator"
@@ -367,7 +367,7 @@ export const AgeCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Calculated Age
@@ -472,7 +472,7 @@ export const MortgageEndDateCalculator: React.FC = () => {
   }, [startDate, term, dob]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Mortgage End Date & Client Age"
         calculatorId="mortgage-end-date"
@@ -521,7 +521,7 @@ export const MortgageEndDateCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Retirement & End Date Criteria
@@ -636,7 +636,7 @@ export const DateDifferenceCalculator: React.FC = () => {
   }, [dateA, dateB]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Date Difference Calculator"
         calculatorId="date-difference"
@@ -672,7 +672,7 @@ export const DateDifferenceCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Difference Duration

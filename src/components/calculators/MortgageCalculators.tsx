@@ -127,7 +127,7 @@ export const LtvCalculator: React.FC = () => {
   }, [propertyValue, loanAmount, ltv, depositAmount, depositPercent]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Super-Flexible LTV Calculator"
         calculatorId="ltv-calculator"
@@ -221,7 +221,7 @@ export const LtvCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               LTV & Deposit Summary
@@ -358,7 +358,7 @@ export const DepositCalculator: React.FC = () => {
   }, [propertyValue, deposit]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Deposit Calculator"
         calculatorId="deposit-calculator"
@@ -418,7 +418,7 @@ export const DepositCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Resulting Loan Amount
@@ -512,7 +512,7 @@ export const LtiCalculator: React.FC = () => {
   }, [loanAmount, applicant1Income, applicant2Income]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Loan-to-Income (LTI) Calculator"
         calculatorId="lti-calculator"
@@ -574,7 +574,7 @@ export const LtiCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               LTI Multiplier
@@ -725,7 +725,7 @@ export const MortgageRepaymentCalculator: React.FC = () => {
   }, [loanAmount, interestRate, term]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm space-y-6">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm space-y-6">
       <CalculatorHeader
         title="Mortgage Repayment Calculator"
         calculatorId="mortgage-repayment"
@@ -785,7 +785,7 @@ export const MortgageRepaymentCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Monthly Repayment (P+I)
@@ -948,7 +948,7 @@ export const InterestOnlyCalculator: React.FC = () => {
   }, [loanAmount, interestRate, term]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Interest-Only Mortgage Calculator"
         calculatorId="interest-only-repayment"
@@ -1008,7 +1008,7 @@ export const InterestOnlyCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Monthly Payment (Interest Only)

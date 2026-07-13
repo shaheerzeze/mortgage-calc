@@ -89,7 +89,7 @@ export const TaxEstimator: React.FC = () => {
   }, [grossSalary, frequency]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="UK Tax Estimator (2026/27)"
         calculatorId="tax-estimator"
@@ -152,7 +152,7 @@ export const TaxEstimator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               {frequencyLabel} Take-home Pay
@@ -255,7 +255,7 @@ export const ReverseTaxCalculator: React.FC = () => {
   }, [targetNet, frequency]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Reverse Tax Calculator"
         calculatorId="reverse-tax"
@@ -305,7 +305,7 @@ export const ReverseTaxCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Estimated Required Gross {frequencyLabel} Salary
@@ -396,7 +396,7 @@ export const TaxBreakdown: React.FC = () => {
   const netPct = gross > 0 ? (taxDetails.netAnnual / gross) * 100 : 100;
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm space-y-6">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm space-y-6">
       <CalculatorHeader
         title="Tax Breakdown Detailed Overview"
         calculatorId="tax-breakdown"
@@ -452,7 +452,7 @@ export const TaxBreakdown: React.FC = () => {
         </div>
 
         {/* Breakdown Output */}
-        <div className="bg-muted/50 rounded-xl p-6 border border-border/50 space-y-4">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 border border-border/50 space-y-4">
           <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-2">
             Detailed Cost Breakdown
           </h3>

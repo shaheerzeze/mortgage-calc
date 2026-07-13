@@ -133,16 +133,16 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
   };
 
   return (
-    <div className="min-h-screen flex text-foreground transition-colors duration-200">
+    <div className="h-screen overflow-hidden flex text-foreground transition-colors duration-200">
       {/* Sidebar Navigation */}
       <aside 
         className={`${
-          sidebarOpen ? 'w-64' : 'w-0 -translate-x-full md:w-16 md:translate-x-0'
+          sidebarOpen ? 'w-64' : 'w-0 -translate-x-full md:w-20 md:translate-x-0'
         } bg-card border-r border-border flex flex-col transition-all duration-300 overflow-hidden shrink-0 z-20`}
       >
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-border">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg select-none">
+        <div className={`${sidebarOpen ? 'justify-between px-4' : 'justify-center px-2'} h-16 flex items-center border-b border-border`}>
+          <Link to="/" className={`${sidebarOpen ? 'gap-2' : 'justify-center'} flex items-center font-bold text-lg select-none`}>
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-mono">
               M
             </div>
@@ -184,7 +184,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
         )}
 
         {/* Navigation Items */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-4">
+        <nav className={`${sidebarOpen ? 'p-3' : 'px-2 py-3'} flex-1 overflow-y-auto space-y-4`}>
           {categories.map(cat => {
             const catCalcs = filteredCalculators.filter(c => c.category === cat.key);
             if (catCalcs.length === 0) return null;
@@ -196,7 +196,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
                     {cat.name}
                   </span>
                 ) : (
-                  <div className="h-[1px] bg-border my-3" />
+                  <div className="h-[1px] bg-border my-3 mx-1" />
                 )}
                 
                 {catCalcs.map(calc => {
@@ -209,19 +209,19 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
                     <Link
                       key={calc.id}
                       to={calc.path}
-                      className={`${sidebarOpen ? 'flex items-center justify-between px-2.5 py-2' : 'flex flex-col items-center justify-center gap-1 px-1 py-2.5 min-h-14'} rounded-lg text-xs font-semibold transition-all ${
+                      className={`${sidebarOpen ? 'flex items-center justify-between px-2.5 py-2' : 'flex w-full flex-col items-center justify-center gap-1.5 px-1 py-2.5 min-h-15'} rounded-xl text-xs font-semibold transition-all ${
                         isActive 
                           ? 'bg-primary text-primary-foreground shadow-sm' 
                           : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                       title={calc.name}
                     >
-                      <div className={`${sidebarOpen ? 'flex items-center gap-2 truncate' : 'flex flex-col items-center justify-center gap-1 min-w-0'}`}>
-                        <NavIcon className={`${sidebarOpen ? 'w-3.5 h-3.5' : 'w-4.5 h-4.5'} shrink-0`} />
+                      <div className={`${sidebarOpen ? 'flex items-center gap-2 truncate' : 'flex w-full min-w-0 flex-col items-center justify-center gap-1'}`}>
+                        <NavIcon className={`${sidebarOpen ? 'w-3.5 h-3.5' : 'w-5 h-5'} shrink-0`} />
                         {sidebarOpen ? (
                           <span className="truncate">{calc.name}</span>
                         ) : (
-                          <span className="max-w-full truncate text-[9px] leading-none font-bold tracking-normal">
+                          <span className="block max-w-[4rem] truncate text-center text-[10px] leading-tight font-bold tracking-normal">
                             {navVisual.short}
                           </span>
                         )}

@@ -109,7 +109,7 @@ export const SalaryAnnualiser: React.FC = () => {
   }, [amount, frequency, multiplier]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Salary Annualiser"
         calculatorId="salary-annualiser"
@@ -180,7 +180,7 @@ export const SalaryAnnualiser: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Annualised Income
@@ -344,7 +344,7 @@ export const AverageSalaryCalculator: React.FC = () => {
   }, [salaries, ignoreHighest, ignoreLowest]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Average Salary Calculator"
         calculatorId="average-salary"
@@ -440,7 +440,7 @@ export const AverageSalaryCalculator: React.FC = () => {
         </div>
 
         {/* Outputs */}
-        <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50 md:sticky md:top-28 self-start">
+        <div className="calculator-results bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50 md:sticky md:top-28 self-start">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Annualised Average
@@ -578,7 +578,7 @@ ${lines}
   }, [amounts, frequency, entryCount]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Custom Salary"
         calculatorId="custom-salary"
@@ -647,7 +647,7 @@ ${lines}
           </div>
         </div>
 
-        <div className="lg:col-span-4 bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50 lg:sticky lg:top-28 self-start">
+        <div className="calculator-results lg:col-span-4 bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50 lg:sticky lg:top-28 self-start">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Total Annual Figure
@@ -772,7 +772,7 @@ ${breakDownText}
   }, [incomes, lender, incomeBuilderRules]);
 
   return (
-    <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
+    <div className="calculator-shell bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
       <CalculatorHeader
         title="Income Builder"
         calculatorId="income-builder"
@@ -826,7 +826,7 @@ ${breakDownText}
         </div>
 
         {/* Outputs Summary */}
-        <div className="lg:col-span-5 bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
+        <div className="calculator-results lg:col-span-5 bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
               Verified Annual Income

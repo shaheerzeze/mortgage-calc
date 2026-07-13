@@ -176,3 +176,29 @@ input[type=number] {
   font-size: 2rem;
   line-height: 2.25rem;
 }
+
+@media (min-width: 768px) {
+  .calculator-shell {
+    padding-bottom: calc(100vh - 10rem);
+  }
+
+  .calculator-results {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    margin-bottom: 0;
+  }
+
+  .split-pane .calculator-shell {
+    padding-bottom: 1.5rem;
+  }
+
+  .split-pane .calculator-results {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-bottom: 0;
+  }
+}
