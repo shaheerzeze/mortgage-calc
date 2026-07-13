@@ -6,24 +6,61 @@ import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+type TaxFrequency = 'annual' | 'monthly' | 'weekly' | 'fortnightly' | 'two-weekly' | 'four-weekly' | 'quarterly' | 'half-yearly';
+
+const taxFrequencyOptions: Array<{ value: TaxFrequency; label: string }> = [
+  { value: 'annual', label: 'Annual' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'fortnightly', label: 'Fortnightly' },
+  { value: 'two-weekly', label: '2 Weekly' },
+  { value: 'four-weekly', label: 'Four Weekly' },
+  { value: 'quarterly', label: 'Quarterly' },
+  { value: 'half-yearly', label: 'Half Yearly' },
+];
+
+const taxFrequencyMultipliers: Record<TaxFrequency, number> = {
+  annual: 1,
+  monthly: 12,
+  weekly: 52,
+  fortnightly: 26,
+  'two-weekly': 26,
+  'four-weekly': 13,
+  quarterly: 4,
+  'half-yearly': 2,
+};
+
+const getTaxFrequencyLabel = (frequency: TaxFrequency) =>
+  taxFrequencyOptions.find(option => option.value === frequency)?.label || frequency;
+
 // 1. UK TAX ESTIMATOR
 export const TaxEstimator: React.FC = () => {
   const { addHistory } = useApp();
   const [grossSalary, setGrossSalary] = usePersistentState<string>('tax-estimator:grossSalary', '50000');
+  const [frequency, setFrequency] = usePersistentState<TaxFrequency>('tax-estimator:frequency', 'annual');
   const [copied, setCopied] = useState(false);
 
-  const gross = parseFloat(grossSalary) || 0;
-  const taxDetails = calculateUKTax(gross);
+  const grossInput = parseFloat(grossSalary) || 0;
+  const frequencyMultiplier = taxFrequencyMultipliers[frequency];
+  const annualGross = grossInput * frequencyMultiplier;
+  const taxDetails = calculateUKTax(annualGross);
+  const frequencyLabel = getTaxFrequencyLabel(frequency);
+  const taxForFrequency = taxDetails.totalIncomeTax / frequencyMultiplier;
+  const niForFrequency = taxDetails.totalNI / frequencyMultiplier;
+  const netForFrequency = taxDetails.netAnnual / frequencyMultiplier;
 
   const handleCopy = () => {
     const text = `UK Tax Estimator Results (2026/27):
-- Gross Annual Salary: ${formatCurrency(gross)}
+- Gross ${frequencyLabel} Salary: ${formatCurrency(grossInput)}
+- Annualised Gross Salary: ${formatCurrency(annualGross)}
 - Personal Allowance: ${formatCurrency(taxDetails.personalAllowance)}
 - Taxable Income: ${formatCurrency(taxDetails.taxableIncome)}
-- Total Income Tax: ${formatCurrency(taxDetails.totalIncomeTax)}
-- National Insurance: ${formatCurrency(taxDetails.totalNI)}
+- Estimated ${frequencyLabel} Income Tax: ${formatCurrency(taxForFrequency)}
+- Estimated ${frequencyLabel} National Insurance: ${formatCurrency(niForFrequency)}
+- Total Annual Income Tax: ${formatCurrency(taxDetails.totalIncomeTax)}
+- Total Annual National Insurance: ${formatCurrency(taxDetails.totalNI)}
 - Net Annual Pay: ${formatCurrency(taxDetails.netAnnual)}
-- Net Monthly Take-Home: ${formatCurrency(taxDetails.netMonthly)}`;
+- Net ${frequencyLabel} Take-Home: ${formatCurrency(netForFrequency)}`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -33,21 +70,22 @@ export const TaxEstimator: React.FC = () => {
 
   const handleReset = () => {
     setGrossSalary('50000');
+    setFrequency('annual');
   };
 
   useEffect(() => {
-    if (gross > 0) {
+    if (annualGross > 0) {
       const timer = setTimeout(() => {
         addHistory(
           'tax-estimator',
           'UK Tax Estimator',
-          { grossSalary: gross },
-          { netAnnual: taxDetails.netAnnual, netMonthly: taxDetails.netMonthly, totalIncomeTax: taxDetails.totalIncomeTax, totalNI: taxDetails.totalNI }
+          { grossSalary: grossInput, frequency, annualGross },
+          { netAnnual: taxDetails.netAnnual, netForFrequency, totalIncomeTax: taxDetails.totalIncomeTax, totalNI: taxDetails.totalNI }
         );
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [grossSalary]);
+  }, [grossSalary, frequency]);
 
   return (
     <div className="bg-card text-card-foreground p-6 rounded-lg border border-border shadow-sm">
@@ -62,7 +100,7 @@ export const TaxEstimator: React.FC = () => {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Gross Annual Salary (£)
+              Gross {frequencyLabel} Salary (£)
             </label>
             <div className="relative">
               <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">£</span>
@@ -73,6 +111,28 @@ export const TaxEstimator: React.FC = () => {
                 className="w-full pl-7 pr-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
                 placeholder="e.g. 50000"
               />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Pay Frequency
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {taxFrequencyOptions.map((chip) => (
+                <button
+                  key={chip.value}
+                  type="button"
+                  onClick={() => setFrequency(chip.value)}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                    frequency === chip.value
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  {chip.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -94,13 +154,13 @@ export const TaxEstimator: React.FC = () => {
         <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
-              Monthly Take-home Pay
+              {frequencyLabel} Take-home Pay
             </h3>
             <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(taxDetails.netMonthly)}
+              {formatCurrency(netForFrequency)}
             </div>
             <p className="mt-2 text-xs font-medium text-muted-foreground">
-              ({formatCurrency(gross)} - {formatCurrency(taxDetails.totalIncomeTax)} - {formatCurrency(taxDetails.totalNI)}) / 12 = {formatCurrency(taxDetails.netMonthly)}
+              {formatCurrency(grossInput)} x {frequencyMultiplier} = {formatCurrency(annualGross)} annual; ({formatCurrency(annualGross)} - {formatCurrency(taxDetails.totalIncomeTax)} tax - {formatCurrency(taxDetails.totalNI)} NI) / {frequencyMultiplier} = {formatCurrency(netForFrequency)}
             </p>
             
             <div className="h-[1px] bg-border my-6"></div>
@@ -111,12 +171,16 @@ export const TaxEstimator: React.FC = () => {
                 <span className="font-semibold text-foreground">{formatCurrency(taxDetails.personalAllowance)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Total Income Tax:</span>
-                <span className="font-semibold text-red-500">-{formatCurrency(taxDetails.totalIncomeTax)}</span>
+                <span className="text-muted-foreground">{frequencyLabel} Income Tax:</span>
+                <span className="font-semibold text-red-500">-{formatCurrency(taxForFrequency)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">National Insurance:</span>
-                <span className="font-semibold text-red-500">-{formatCurrency(taxDetails.totalNI)}</span>
+                <span className="text-muted-foreground">{frequencyLabel} National Insurance:</span>
+                <span className="font-semibold text-red-500">-{formatCurrency(niForFrequency)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Annualised Gross:</span>
+                <span className="font-semibold text-foreground">{formatCurrency(annualGross)}</span>
               </div>
               <div className="flex justify-between items-center text-sm border-t border-border pt-3">
                 <span className="font-medium text-foreground">Estimated Net Annual Pay:</span>
@@ -139,23 +203,29 @@ export const TaxEstimator: React.FC = () => {
 // 2. REVERSE TAX CALCULATOR
 export const ReverseTaxCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [targetNet, setTargetNet] = usePersistentState<string>('reverse-tax:targetNet', '3000');
-  const [frequency, setFrequency] = usePersistentState<'monthly' | 'annual'>('reverse-tax:frequency', 'monthly');
+  const [targetNet, setTargetNet] = usePersistentState<string>('reverse-tax:targetNet', '36000');
+  const [frequency, setFrequency] = usePersistentState<TaxFrequency>('reverse-tax:frequency', 'annual');
   const [copied, setCopied] = useState(false);
 
   const numNet = parseFloat(targetNet) || 0;
-  const targetAnnualNet = frequency === 'monthly' ? numNet * 12 : numNet;
+  const frequencyMultiplier = taxFrequencyMultipliers[frequency];
+  const frequencyLabel = getTaxFrequencyLabel(frequency);
+  const targetAnnualNet = numNet * frequencyMultiplier;
   
   const estimatedGross = calculateGrossFromNet(targetAnnualNet);
   const taxDetails = calculateUKTax(estimatedGross);
+  const grossForFrequency = estimatedGross / frequencyMultiplier;
+  const taxForFrequency = taxDetails.totalIncomeTax / frequencyMultiplier;
+  const niForFrequency = taxDetails.totalNI / frequencyMultiplier;
 
   const handleCopy = () => {
     const text = `Reverse Tax Calculator Results:
-- Target Net Salary: ${formatCurrency(numNet)} (${frequency})
+- Target ${frequencyLabel} Net Salary: ${formatCurrency(numNet)}
+- Target Annual Net Salary: ${formatCurrency(targetAnnualNet)}
 - Estimated Required Gross Annual: ${formatCurrency(estimatedGross)}
-- Estimated Monthly Gross: ${formatCurrency(estimatedGross / 12)}
-- Income Tax deductions: ${formatCurrency(taxDetails.totalIncomeTax)}
-- NI deductions: ${formatCurrency(taxDetails.totalNI)}`;
+- Estimated Required Gross ${frequencyLabel}: ${formatCurrency(grossForFrequency)}
+- Estimated ${frequencyLabel} Income Tax deductions: ${formatCurrency(taxForFrequency)}
+- Estimated ${frequencyLabel} NI deductions: ${formatCurrency(niForFrequency)}`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -164,8 +234,8 @@ export const ReverseTaxCalculator: React.FC = () => {
   };
 
   const handleReset = () => {
-    setTargetNet('3000');
-    setFrequency('monthly');
+    setTargetNet('36000');
+    setFrequency('annual');
   };
 
   useEffect(() => {
@@ -174,8 +244,8 @@ export const ReverseTaxCalculator: React.FC = () => {
         addHistory(
           'reverse-tax',
           'Reverse Tax Calculator',
-          { targetNet: numNet, frequency },
-          { estimatedGross }
+          { targetNet: numNet, frequency, targetAnnualNet },
+          { estimatedGross, grossForFrequency }
         );
       }, 1500);
       return () => clearTimeout(timer);
@@ -195,7 +265,7 @@ export const ReverseTaxCalculator: React.FC = () => {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Target Net Salary (£)
+              Target {frequencyLabel} Net Salary (£)
             </label>
             <div className="relative">
               <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">£</span>
@@ -213,29 +283,21 @@ export const ReverseTaxCalculator: React.FC = () => {
             <label className="block text-sm font-medium text-muted-foreground mb-1">
               Net Frequency
             </label>
-            <div className="grid grid-cols-2 gap-2 bg-muted p-1 rounded-lg">
-              <button
-                type="button"
-                onClick={() => setFrequency('monthly')}
-                className={`py-1.5 text-xs font-semibold rounded-md transition-all ${
-                  frequency === 'monthly'
-                    ? 'bg-card text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Monthly Net
-              </button>
-              <button
-                type="button"
-                onClick={() => setFrequency('annual')}
-                className={`py-1.5 text-xs font-semibold rounded-md transition-all ${
-                  frequency === 'annual'
-                    ? 'bg-card text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Annual Net
-              </button>
+            <div className="flex flex-wrap gap-2">
+              {taxFrequencyOptions.map((chip) => (
+                <button
+                  key={chip.value}
+                  type="button"
+                  onClick={() => setFrequency(chip.value)}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                    frequency === chip.value
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  {chip.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -244,33 +306,33 @@ export const ReverseTaxCalculator: React.FC = () => {
         <div className="bg-muted/50 rounded-xl p-6 flex flex-col justify-between border border-border/50">
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
-              Estimated Required Gross Annual Salary
+              Estimated Required Gross {frequencyLabel} Salary
             </h3>
             <div className="text-4xl font-extrabold text-primary tracking-tight">
-              {formatCurrency(estimatedGross)}
+              {formatCurrency(grossForFrequency)}
             </div>
             <p className="mt-2 text-xs font-medium text-muted-foreground">
-              Target annual net {formatCurrency(targetAnnualNet)} solved backwards to estimated gross {formatCurrency(estimatedGross)}
+              {formatCurrency(numNet)} x {frequencyMultiplier} = {formatCurrency(targetAnnualNet)} annual target net; solved backwards to {formatCurrency(estimatedGross)} gross annual
             </p>
             
             <div className="h-[1px] bg-border my-6"></div>
             
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Gross Monthly equivalent:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(estimatedGross / 12)}</span>
+                <span className="text-muted-foreground">Gross Annual equivalent:</span>
+                <span className="font-semibold text-foreground">{formatCurrency(estimatedGross)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Estimated Income Tax:</span>
-                <span className="font-semibold text-red-500">+{formatCurrency(taxDetails.totalIncomeTax)}</span>
+                <span className="text-muted-foreground">Estimated {frequencyLabel} Income Tax:</span>
+                <span className="font-semibold text-red-500">+{formatCurrency(taxForFrequency)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Estimated National Insurance:</span>
-                <span className="font-semibold text-red-500">+{formatCurrency(taxDetails.totalNI)}</span>
+                <span className="text-muted-foreground">Estimated {frequencyLabel} National Insurance:</span>
+                <span className="font-semibold text-red-500">+{formatCurrency(niForFrequency)}</span>
               </div>
               <div className="flex justify-between items-center text-sm border-t border-border pt-3">
-                <span className="font-medium text-foreground">Target Net Salary:</span>
-                <span className="font-bold text-accent">{formatCurrency(frequency === 'monthly' ? numNet : targetAnnualNet / 12)} /mo</span>
+                <span className="font-medium text-foreground">Target {frequencyLabel} Net Salary:</span>
+                <span className="font-bold text-accent">{formatCurrency(numNet)}</span>
               </div>
             </div>
           </div>
