@@ -4,7 +4,7 @@ import { formatCurrency } from '../../utils/mathHelpers';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import { Sparkles, Copy, RotateCcw, Star, HelpCircle, Plus, Trash2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { CopyableResult } from '../CopyableResult';
+import { CopyableResult, CopyableText } from '../CopyableResult';
 
 export const CalculatorHeader: React.FC<{ title: string; calculatorId: string; onReset: () => void; onCopy: () => void }> = ({ title, calculatorId, onReset, onCopy }) => {
   const { favorites, toggleFavorite } = useApp();
@@ -47,13 +47,14 @@ export const CalculatorHeader: React.FC<{ title: string; calculatorId: string; o
 // 1. SALARY ANNUALISER
 export const SalaryAnnualiser: React.FC = () => {
   const { addHistory } = useApp();
-  const [amount, setAmount] = usePersistentState<string>('salary-annualiser:amount', '2500');
+  const [amount, setAmount] = usePersistentState<string>('salary-annualiser:amount', '');
   const [frequency, setFrequency] = usePersistentState<string>('salary-annualiser:frequency', 'monthly');
-  const [multiplier, setMultiplier] = usePersistentState<string>('salary-annualiser:multiplier', '12');
+  const [multiplier, setMultiplier] = usePersistentState<string>('salary-annualiser:multiplier', '');
   const [copied, setCopied] = useState(false);
 
   const freqMultipliers: Record<string, number> = {
     weekly: 52,
+    'two-weekly': 26,
     'four-weekly': 13,
     monthly: 12,
     quarterly: 4,
@@ -72,6 +73,7 @@ export const SalaryAnnualiser: React.FC = () => {
   const annualSalary = numAmount * numMultiplier;
   const monthlySalary = annualSalary / 12;
   const weeklySalary = annualSalary / 52;
+  const annualiserCalculationText = `${formatCurrency(numAmount)} x ${numMultiplier} = ${formatCurrency(annualSalary)}`;
 
   const handleCopy = () => {
     const text = `Salary Annualiser Results:
@@ -88,9 +90,9 @@ export const SalaryAnnualiser: React.FC = () => {
   };
 
   const handleReset = () => {
-    setAmount('2500');
+    setAmount('');
     setFrequency('monthly');
-    setMultiplier('12');
+    setMultiplier('');
   };
 
   // Save to history on significant output updates
@@ -139,6 +141,7 @@ export const SalaryAnnualiser: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {[
                 { value: 'weekly', label: 'Weekly' },
+                { value: 'two-weekly', label: 'Two Weekly' },
                 { value: 'four-weekly', label: 'Four Weekly' },
                 { value: 'monthly', label: 'Monthly' },
                 { value: 'quarterly', label: 'Quarterly' },
@@ -189,9 +192,7 @@ export const SalaryAnnualiser: React.FC = () => {
               value={formatCurrency(annualSalary)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {formatCurrency(numAmount)} x {numMultiplier} = {formatCurrency(annualSalary)}
-            </p>
+            <CopyableText text={annualiserCalculationText} className="mt-2 text-xs font-medium text-muted-foreground" />
             <div className="h-[1px] bg-border my-6"></div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -226,9 +227,9 @@ interface SalaryEntry {
 export const AverageSalaryCalculator: React.FC = () => {
   const { addHistory } = useApp();
   const [salaries, setSalaries] = usePersistentState<SalaryEntry[]>('average-salary:salaries', [
-    { amount: '40000', frequency: 'yearly' },
-    { amount: '42000', frequency: 'yearly' },
-    { amount: '45000', frequency: 'yearly' },
+    { amount: '', frequency: 'yearly' },
+    { amount: '', frequency: 'yearly' },
+    { amount: '', frequency: 'yearly' },
   ]);
   const [ignoreHighest, setIgnoreHighest] = usePersistentState('average-salary:ignoreHighest', false);
   const [ignoreLowest, setIgnoreLowest] = usePersistentState('average-salary:ignoreLowest', false);
@@ -236,6 +237,7 @@ export const AverageSalaryCalculator: React.FC = () => {
 
   const freqMultipliers: Record<string, number> = {
     weekly: 52,
+    'two-weekly': 26,
     'four-weekly': 13,
     monthly: 12,
     quarterly: 4,
@@ -244,6 +246,7 @@ export const AverageSalaryCalculator: React.FC = () => {
   };
   const frequencyLabels: Record<string, string> = {
     weekly: 'weekly',
+    'two-weekly': 'two-weekly',
     'four-weekly': 'four-weekly',
     monthly: 'monthly',
     quarterly: 'quarterly',
@@ -321,9 +324,9 @@ export const AverageSalaryCalculator: React.FC = () => {
 
   const handleReset = () => {
     setSalaries([
-      { amount: '40000', frequency: 'yearly' },
-      { amount: '42000', frequency: 'yearly' },
-      { amount: '45000', frequency: 'yearly' },
+      { amount: '', frequency: 'yearly' },
+      { amount: '', frequency: 'yearly' },
+      { amount: '', frequency: 'yearly' },
     ]);
     setIgnoreHighest(false);
     setIgnoreLowest(false);
@@ -400,6 +403,7 @@ export const AverageSalaryCalculator: React.FC = () => {
                     >
                       <option value="yearly">Yearly</option>
                       <option value="monthly">Monthly</option>
+                      <option value="two-weekly">Two Weekly</option>
                       <option value="four-weekly">Four Weekly</option>
                       <option value="weekly">Weekly</option>
                     </select>
@@ -449,9 +453,7 @@ export const AverageSalaryCalculator: React.FC = () => {
               value={formatCurrency(averageAnnual)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {averageCalculationText}
-            </p>
+            <CopyableText text={averageCalculationText} className="mt-2 text-xs font-medium text-muted-foreground" />
             <div className="h-[1px] bg-border my-6"></div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -488,6 +490,7 @@ export const CustomSalaryCalculator: React.FC = () => {
 
   const frequencyFieldCounts: Record<string, number> = {
     weekly: 52,
+    'two-weekly': 26,
     'four-weekly': 13,
     monthly: 12,
     quarterly: 4,
@@ -497,6 +500,7 @@ export const CustomSalaryCalculator: React.FC = () => {
 
   const frequencyOptions = [
     { value: 'weekly', label: 'Weekly' },
+    { value: 'two-weekly', label: 'Two Weekly' },
     { value: 'four-weekly', label: 'Four Weekly' },
     { value: 'monthly', label: 'Monthly' },
     { value: 'quarterly', label: 'Quarterly' },
@@ -508,6 +512,7 @@ export const CustomSalaryCalculator: React.FC = () => {
   const numericAmounts = amounts.slice(0, entryCount).map(amount => parseFloat(amount) || 0);
   const annualTotal = numericAmounts.reduce((total, amount) => total + amount, 0);
   const monthlyTotal = annualTotal / 12;
+  const customSalaryCalculationText = `Sum of ${entryCount} entered ${frequency.replace('-', ' ')} fields = ${formatCurrency(annualTotal)}`;
 
   const syncEntryCount = (count: number) => {
     const nextCount = Math.max(1, count || 1);
@@ -630,7 +635,7 @@ ${lines}
             {amounts.slice(0, entryCount).map((amount, index) => (
               <div key={index} className="p-3 rounded-lg border border-border bg-background">
                 <label className="block text-xs font-semibold text-muted-foreground mb-2">
-                  {frequency === 'monthly' ? 'Month' : frequency === 'weekly' ? 'Week' : frequency === 'four-weekly' ? 'Four-week period' : frequency === 'quarterly' ? 'Quarter' : frequency === 'half-yearly' ? 'Half-year period' : 'Salary Entry'} #{index + 1}
+                  {frequency === 'monthly' ? 'Month' : frequency === 'weekly' ? 'Week' : frequency === 'two-weekly' ? 'Two-week period' : frequency === 'four-weekly' ? 'Four-week period' : frequency === 'quarterly' ? 'Quarter' : frequency === 'half-yearly' ? 'Half-year period' : 'Salary Entry'} #{index + 1}
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">GBP</span>
@@ -656,9 +661,7 @@ ${lines}
               value={formatCurrency(annualTotal)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              Sum of {entryCount} entered {frequency.replace('-', ' ')} fields = {formatCurrency(annualTotal)}
-            </p>
+            <CopyableText text={customSalaryCalculationText} className="mt-2 text-xs font-medium text-muted-foreground" />
 
             <div className="h-[1px] bg-border my-6"></div>
 
@@ -701,12 +704,12 @@ export const IncomeBuilder: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const [incomes, setIncomes] = usePersistentState<IncomeItem[]>('income-builder:incomes', [
-    { key: 'basic', name: 'Basic Salary', amount: '45000' },
-    { key: 'bonus', name: 'Bonus', amount: '5000' },
-    { key: 'commission', name: 'Commission', amount: '2000' },
-    { key: 'overtime', name: 'Overtime', amount: '1500' },
-    { key: 'carAllowance', name: 'Car Allowance', amount: '3600' },
-    { key: 'shiftAllowance', name: 'Shift Allowance', amount: '1200' },
+    { key: 'basic', name: 'Basic Salary', amount: '' },
+    { key: 'bonus', name: 'Bonus', amount: '' },
+    { key: 'commission', name: 'Commission', amount: '' },
+    { key: 'overtime', name: 'Overtime', amount: '' },
+    { key: 'carAllowance', name: 'Car Allowance', amount: '' },
+    { key: 'shiftAllowance', name: 'Shift Allowance', amount: '' },
   ]);
 
   const handleAmountChange = (key: string, value: string) => {
@@ -748,12 +751,12 @@ ${breakDownText}
 
   const handleReset = () => {
     setIncomes([
-      { key: 'basic', name: 'Basic Salary', amount: '45000' },
-      { key: 'bonus', name: 'Bonus', amount: '5000' },
-      { key: 'commission', name: 'Commission', amount: '2000' },
-      { key: 'overtime', name: 'Overtime', amount: '1500' },
-      { key: 'carAllowance', name: 'Car Allowance', amount: '3600' },
-      { key: 'shiftAllowance', name: 'Shift Allowance', amount: '1200' },
+      { key: 'basic', name: 'Basic Salary', amount: '' },
+      { key: 'bonus', name: 'Bonus', amount: '' },
+      { key: 'commission', name: 'Commission', amount: '' },
+      { key: 'overtime', name: 'Overtime', amount: '' },
+      { key: 'carAllowance', name: 'Car Allowance', amount: '' },
+      { key: 'shiftAllowance', name: 'Shift Allowance', amount: '' },
     ]);
   };
 
@@ -835,9 +838,10 @@ ${breakDownText}
               value={formatCurrency(totalVerified)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              Accepted income total = sum of each declared amount x lender allowance %
-            </p>
+            <CopyableText
+              text="Accepted income total = sum of each declared amount x lender allowance %"
+              className="mt-2 text-xs font-medium text-muted-foreground"
+            />
             
             <div className="h-[1px] bg-border my-6"></div>
             

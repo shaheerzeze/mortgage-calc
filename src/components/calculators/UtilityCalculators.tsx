@@ -4,7 +4,7 @@ import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles, Calendar, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { CopyableResult } from '../CopyableResult';
+import { CopyableResult, CopyableText } from '../CopyableResult';
 
 // 1. PERCENTAGE CALCULATORS (Percentage of, Percentage Change, Difference)
 export const PercentageCalculators: React.FC = () => {
@@ -13,26 +13,32 @@ export const PercentageCalculators: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   // Tab 1: What is X% of Y?
-  const [pctX, setPctX] = usePersistentState('percentage:pctX', '15');
-  const [pctY, setPctY] = usePersistentState('percentage:pctY', '250000');
+  const [pctX, setPctX] = usePersistentState('percentage:pctX', '');
+  const [pctY, setPctY] = usePersistentState('percentage:pctY', '');
   const numPctX = parseFloat(pctX) || 0;
   const numPctY = parseFloat(pctY) || 0;
   const ofResult = (numPctX / 100) * numPctY;
 
   // Tab 2: Percentage change from X to Y
-  const [changeX, setChangeX] = usePersistentState('percentage:changeX', '1500');
-  const [changeY, setChangeY] = usePersistentState('percentage:changeY', '1800');
+  const [changeX, setChangeX] = usePersistentState('percentage:changeX', '');
+  const [changeY, setChangeY] = usePersistentState('percentage:changeY', '');
   const numChangeX = parseFloat(changeX) || 0;
   const numChangeY = parseFloat(changeY) || 0;
   const changeResult = numChangeX > 0 ? ((numChangeY - numChangeX) / numChangeX) * 100 : 0;
 
   // Tab 3: Difference between X and Y
-  const [diffX, setDiffX] = usePersistentState('percentage:diffX', '320000');
-  const [diffY, setDiffY] = usePersistentState('percentage:diffY', '300000');
+  const [diffX, setDiffX] = usePersistentState('percentage:diffX', '');
+  const [diffY, setDiffY] = usePersistentState('percentage:diffY', '');
   const numDiffX = parseFloat(diffX) || 0;
   const numDiffY = parseFloat(diffY) || 0;
   const diffAbs = Math.abs(numDiffX - numDiffY);
   const diffPct = numDiffX > 0 ? (diffAbs / numDiffX) * 100 : 0;
+  const percentageCalculationText =
+    activeTab === 'of'
+      ? `${pctX} / 100 x ${pctY} = ${ofResult.toFixed(2)}`
+      : activeTab === 'change'
+        ? `((${changeY} - ${changeX}) / ${changeX}) x 100 = ${changeResult.toFixed(2)}%`
+        : `|${diffX} - ${diffY}| = ${diffAbs.toFixed(2)}, then / ${diffX} x 100 = ${diffPct.toFixed(2)}%`;
 
   const handleCopy = () => {
     let text = '';
@@ -57,14 +63,14 @@ export const PercentageCalculators: React.FC = () => {
 
   const handleReset = () => {
     if (activeTab === 'of') {
-      setPctX('15');
-      setPctY('250000');
+      setPctX('');
+      setPctY('');
     } else if (activeTab === 'change') {
-      setChangeX('1500');
-      setChangeY('1800');
+      setChangeX('');
+      setChangeY('');
     } else {
-      setDiffX('320000');
-      setDiffY('300000');
+      setDiffX('');
+      setDiffY('');
     }
   };
 
@@ -240,11 +246,7 @@ export const PercentageCalculators: React.FC = () => {
             
             <div className="text-xs text-muted-foreground flex gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-accent shrink-0" />
-              <span>
-                {activeTab === 'of' && `${pctX} / 100 x ${pctY} = ${ofResult.toFixed(2)}`}
-                {activeTab === 'change' && `((${changeY} - ${changeX}) / ${changeX}) x 100 = ${changeResult.toFixed(2)}%`}
-                {activeTab === 'diff' && `|${diffX} - ${diffY}| = ${diffAbs.toFixed(2)}, then / ${diffX} x 100 = ${diffPct.toFixed(2)}%`}
-              </span>
+              <CopyableText text={percentageCalculationText} />
             </div>
           </div>
 
@@ -391,7 +393,7 @@ export const AgeCalculator: React.FC = () => {
             
             <div className="text-xs text-muted-foreground flex gap-1.5 items-center">
               <Calendar className="w-4 h-4 text-accent shrink-0" />
-              <span>{dob} to {targetDate} = {age.years} years, {age.months} months, {age.days} days</span>
+              <CopyableText text={`${dob} to ${targetDate} = ${age.years} years, ${age.months} months, ${age.days} days`} />
             </div>
           </div>
 
@@ -410,7 +412,7 @@ export const AgeCalculator: React.FC = () => {
 export const MortgageEndDateCalculator: React.FC = () => {
   const { addHistory, lender } = useApp();
   const [startDate, setStartDate] = usePersistentState('mortgage-end:startDate', () => new Date().toISOString().split('T')[0]);
-  const [term, setTerm] = usePersistentState('mortgage-end:term', '25');
+  const [term, setTerm] = usePersistentState('mortgage-end:term', '');
   const [dob, setDob] = usePersistentState('mortgage-end:dob', '1990-01-15');
   const [copied, setCopied] = useState(false);
 
@@ -453,7 +455,7 @@ export const MortgageEndDateCalculator: React.FC = () => {
 
   const handleReset = () => {
     setStartDate(new Date().toISOString().split('T')[0]);
-    setTerm('25');
+    setTerm('');
     setDob('1990-01-15');
   };
 
@@ -558,9 +560,10 @@ export const MortgageEndDateCalculator: React.FC = () => {
             
             <div className="h-[1px] bg-border my-6"></div>
             
-            <div className="text-xs text-muted-foreground">
-              {startDate} + {yearsTerm} years = {endDate.toISOString().split('T')[0]}; age at end is {clientAgeAtEnd.toFixed(1)} years.
-            </div>
+            <CopyableText
+              text={`${startDate} + ${yearsTerm} years = ${endDate.toISOString().split('T')[0]}; age at end is ${clientAgeAtEnd.toFixed(1)} years.`}
+              className="text-xs text-muted-foreground"
+            />
           </div>
 
           {copied && (
@@ -579,15 +582,24 @@ export const DateDifferenceCalculator: React.FC = () => {
   const { addHistory } = useApp();
   const [dateA, setDateA] = usePersistentState('date-difference:dateA', () => new Date().toISOString().split('T')[0]);
   const [dateB, setDateB] = usePersistentState('date-difference:dateB', () => new Date().toISOString().split('T')[0]);
+  const [offsetDate, setOffsetDate] = usePersistentState('date-offset:date', () => new Date().toISOString().split('T')[0]);
+  const [offsetAmount, setOffsetAmount] = usePersistentState('date-offset:amount', '');
+  const [offsetUnit, setOffsetUnit] = usePersistentState<'days' | 'weeks' | 'months' | 'years'>('date-offset:unit', 'days');
+  const [offsetDirection, setOffsetDirection] = usePersistentState<'future' | 'past'>('date-offset:direction', 'future');
   const [copied, setCopied] = useState(false);
 
   const start = new Date(dateA);
   const end = new Date(dateB);
+  const offsetStart = new Date(offsetDate);
+  const offsetNumber = parseInt(offsetAmount, 10) || 0;
 
   let diff = { years: 0, months: 0, days: 0 };
   let totalDays = 0;
   let totalWeeks = 0;
   let isValid = false;
+  let futureDate: Date | null = null;
+  let pastDate: Date | null = null;
+  let selectedOffsetDate: Date | null = null;
 
   if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
     const diffTime = Math.abs(end.getTime() - start.getTime());
@@ -601,6 +613,33 @@ export const DateDifferenceCalculator: React.FC = () => {
     isValid = true;
   }
 
+  if (!isNaN(offsetStart.getTime()) && offsetNumber >= 0) {
+    futureDate = new Date(offsetStart);
+    pastDate = new Date(offsetStart);
+
+    if (offsetUnit === 'days') {
+      futureDate.setDate(futureDate.getDate() + offsetNumber);
+      pastDate.setDate(pastDate.getDate() - offsetNumber);
+    } else if (offsetUnit === 'weeks') {
+      futureDate.setDate(futureDate.getDate() + offsetNumber * 7);
+      pastDate.setDate(pastDate.getDate() - offsetNumber * 7);
+    } else if (offsetUnit === 'months') {
+      futureDate.setMonth(futureDate.getMonth() + offsetNumber);
+      pastDate.setMonth(pastDate.getMonth() - offsetNumber);
+    } else {
+      futureDate.setFullYear(futureDate.getFullYear() + offsetNumber);
+      pastDate.setFullYear(pastDate.getFullYear() - offsetNumber);
+    }
+
+    selectedOffsetDate = offsetDirection === 'future' ? futureDate : pastDate;
+  }
+
+  const unitLabel = offsetUnit === 'days' ? 'days' : offsetUnit === 'weeks' ? 'weeks' : offsetUnit === 'months' ? 'months' : 'years';
+  const directionLabel = offsetDirection === 'future' ? 'Future' : 'Past';
+  const formatDate = (date: Date | null) => date ? date.toISOString().split('T')[0] : 'Invalid date';
+  const formatDisplayDate = (date: Date | null) =>
+    date ? date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Invalid date';
+
   const handleCopy = () => {
     if (!isValid) return;
     const text = `Date Difference Calculator Results:
@@ -608,7 +647,13 @@ export const DateDifferenceCalculator: React.FC = () => {
 - Date B: ${dateB}
 - Difference: ${diff.years} Years, ${diff.months} Months, ${diff.days} Days
 - Total Days: ${totalDays}
-- Total Weeks: ${totalWeeks}`;
+- Total Weeks: ${totalWeeks}
+
+Date Offset Results:
+- Start Date: ${offsetDate}
+- Direction: ${directionLabel}
+- Amount: ${offsetNumber} ${unitLabel}
+- Result Date: ${formatDate(selectedOffsetDate)}`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -619,6 +664,10 @@ export const DateDifferenceCalculator: React.FC = () => {
   const handleReset = () => {
     setDateA(new Date().toISOString().split('T')[0]);
     setDateB(new Date().toISOString().split('T')[0]);
+    setOffsetDate(new Date().toISOString().split('T')[0]);
+    setOffsetAmount('');
+    setOffsetUnit('days');
+    setOffsetDirection('future');
   };
 
   useEffect(() => {
@@ -645,29 +694,101 @@ export const DateDifferenceCalculator: React.FC = () => {
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Inputs */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Date A
-            </label>
-            <input
-              type="date"
-              value={dateA}
-              onChange={(e) => setDateA(e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
-            />
+        <div className="space-y-5">
+          <div className="space-y-4 rounded-xl border border-border bg-background/40 p-4">
+            <h3 className="text-sm font-bold text-foreground">Difference Between Dates</h3>
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                Date A
+              </label>
+              <input
+                type="date"
+                value={dateA}
+                onChange={(e) => setDateA(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                Date B
+              </label>
+              <input
+                type="date"
+                value={dateB}
+                onChange={(e) => setDateB(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Date B
-            </label>
-            <input
-              type="date"
-              value={dateB}
-              onChange={(e) => setDateB(e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
-            />
+          <div className="space-y-4 rounded-xl border border-border bg-background/40 p-4">
+            <h3 className="text-sm font-bold text-foreground">Future / Past Date Finder</h3>
+            <div className="flex rounded-lg border border-border bg-background p-1">
+              {[
+                { value: 'future', label: 'Future' },
+                { value: 'past', label: 'Past' },
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => setOffsetDirection(tab.value as 'future' | 'past')}
+                  className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    offsetDirection === tab.value
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={offsetDate}
+                onChange={(e) => setOffsetDate(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
+                Add / subtract amount
+              </label>
+              <div className="flex rounded-lg border border-border bg-background p-1">
+                {[
+                  { value: 'days', label: 'Day' },
+                  { value: 'weeks', label: 'Week' },
+                  { value: 'months', label: 'Month' },
+                  { value: 'years', label: 'Year' },
+                ].map((tab) => (
+                  <button
+                    key={tab.value}
+                    type="button"
+                    onClick={() => setOffsetUnit(tab.value as 'days' | 'weeks' | 'months' | 'years')}
+                    className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      offsetUnit === tab.value
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="number"
+                min="0"
+                value={offsetAmount}
+                onChange={(e) => setOffsetAmount(e.target.value)}
+                className="mt-2 w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                placeholder="Enter number"
+              />
+            </div>
           </div>
         </div>
 
@@ -700,8 +821,25 @@ export const DateDifferenceCalculator: React.FC = () => {
             
             <div className="h-[1px] bg-border my-6"></div>
             
-            <div className="text-xs text-muted-foreground">
-              Absolute difference between {dateA} and {dateB} = {totalDays} days, or {totalWeeks} full weeks.
+            <CopyableText
+              text={`Absolute difference between ${dateA} and ${dateB} = ${totalDays} days, or ${totalWeeks} full weeks.`}
+              className="text-xs text-muted-foreground"
+            />
+
+            <div className="h-[1px] bg-border my-6"></div>
+
+            <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase mb-4">
+              Future / Past Date
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <span className="block text-xs font-medium text-muted-foreground">{directionLabel} Date</span>
+                <CopyableResult value={formatDisplayDate(selectedOffsetDate)} className="text-xl font-bold text-primary" />
+              </div>
+              <CopyableText
+                text={`${offsetDate} ${offsetDirection === 'future' ? '+' : '-'} ${offsetNumber} ${unitLabel} = ${formatDate(selectedOffsetDate)}`}
+                className="text-xs text-muted-foreground"
+              />
             </div>
           </div>
 

@@ -5,16 +5,16 @@ import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { CopyableResult } from '../CopyableResult';
+import { CopyableResult, CopyableText } from '../CopyableResult';
 
 // 1. LTV CALCULATOR
 export const LtvCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [propertyValue, setPropertyValue] = usePersistentState<string>('ltv:propertyValue', '300000');
-  const [loanAmount, setLoanAmount] = usePersistentState<string>('ltv:loanAmount', '270000');
-  const [ltv, setLtv] = usePersistentState<string>('ltv:ltv', '90');
-  const [depositAmount, setDepositAmount] = usePersistentState<string>('ltv:depositAmount', '30000');
-  const [depositPercent, setDepositPercent] = usePersistentState<string>('ltv:depositPercent', '10');
+  const [propertyValue, setPropertyValue] = usePersistentState<string>('ltv:propertyValue', '');
+  const [loanAmount, setLoanAmount] = usePersistentState<string>('ltv:loanAmount', '');
+  const [ltv, setLtv] = usePersistentState<string>('ltv:ltv', '');
+  const [depositAmount, setDepositAmount] = usePersistentState<string>('ltv:depositAmount', '');
+  const [depositPercent, setDepositPercent] = usePersistentState<string>('ltv:depositPercent', '');
   const [copied, setCopied] = useState(false);
 
   const numVal = parseFloat(propertyValue) || 0;
@@ -105,11 +105,11 @@ export const LtvCalculator: React.FC = () => {
   };
 
   const handleReset = () => {
-    setPropertyValue('300000');
-    setLoanAmount('270000');
-    setLtv('90');
-    setDepositAmount('30000');
-    setDepositPercent('10');
+    setPropertyValue('');
+    setLoanAmount('');
+    setLtv('');
+    setDepositAmount('');
+    setDepositPercent('');
   };
 
   useEffect(() => {
@@ -231,9 +231,10 @@ export const LtvCalculator: React.FC = () => {
               <div>
                 <span className="block text-xs font-medium text-muted-foreground">Property Value</span>
                 <CopyableResult value={formatCurrency(numVal)} className="text-2xl font-bold text-foreground" />
-                <p className="mt-1 text-xs font-medium text-muted-foreground">
-                  LTV = {formatCurrency(numLoan)} / {formatCurrency(numVal)} x 100 = {numLtv.toFixed(2)}%
-                </p>
+                <CopyableText
+                  text={`LTV = ${formatCurrency(numLoan)} / ${formatCurrency(numVal)} x 100 = ${numLtv.toFixed(2)}%`}
+                  className="mt-1 text-xs font-medium text-muted-foreground"
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -286,9 +287,9 @@ export const LtvCalculator: React.FC = () => {
 // 2. DEPOSIT CALCULATOR
 export const DepositCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [propertyValue, setPropertyValue] = usePersistentState<string>('deposit:propertyValue', '300000');
-  const [deposit, setDeposit] = usePersistentState<string>('deposit:deposit', '30000');
-  const [ltv, setLtv] = usePersistentState<string>('deposit:ltv', '90');
+  const [propertyValue, setPropertyValue] = usePersistentState<string>('deposit:propertyValue', '');
+  const [deposit, setDeposit] = usePersistentState<string>('deposit:deposit', '');
+  const [ltv, setLtv] = usePersistentState<string>('deposit:ltv', '');
   const [copied, setCopied] = useState(false);
 
   const numVal = parseFloat(propertyValue) || 0;
@@ -338,9 +339,9 @@ export const DepositCalculator: React.FC = () => {
   };
 
   const handleReset = () => {
-    setPropertyValue('300000');
-    setDeposit('30000');
-    setLtv('90');
+    setPropertyValue('');
+    setDeposit('');
+    setLtv('');
   };
 
   useEffect(() => {
@@ -427,9 +428,10 @@ export const DepositCalculator: React.FC = () => {
               value={formatCurrency(loanAmount)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {formatCurrency(numVal)} - {formatCurrency(numDeposit)} = {formatCurrency(loanAmount)}
-            </p>
+            <CopyableText
+              text={`${formatCurrency(numVal)} - ${formatCurrency(numDeposit)} = ${formatCurrency(loanAmount)}`}
+              className="mt-2 text-xs font-medium text-muted-foreground"
+            />
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -459,9 +461,9 @@ export const DepositCalculator: React.FC = () => {
 // 3. LOAN-TO-INCOME (LTI) CALCULATOR
 export const LtiCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [loanAmount, setLoanAmount] = usePersistentState<string>('lti:loanAmount', '225000');
-  const [applicant1Income, setApplicant1Income] = usePersistentState<string>('lti:applicant1Income', '45000');
-  const [applicant2Income, setApplicant2Income] = usePersistentState<string>('lti:applicant2Income', '15000');
+  const [loanAmount, setLoanAmount] = usePersistentState<string>('lti:loanAmount', '');
+  const [applicant1Income, setApplicant1Income] = usePersistentState<string>('lti:applicant1Income', '');
+  const [applicant2Income, setApplicant2Income] = usePersistentState<string>('lti:applicant2Income', '');
   const [copied, setCopied] = useState(false);
 
   const numLoan = parseFloat(loanAmount) || 0;
@@ -492,9 +494,9 @@ export const LtiCalculator: React.FC = () => {
   };
 
   const handleReset = () => {
-    setLoanAmount('225000');
-    setApplicant1Income('45000');
-    setApplicant2Income('15000');
+    setLoanAmount('');
+    setApplicant1Income('');
+    setApplicant2Income('');
   };
 
   useEffect(() => {
@@ -592,9 +594,10 @@ export const LtiCalculator: React.FC = () => {
                 {ltiRatio <= 4.49 ? 'Within 4.5x' : ltiRatio <= 4.99 ? 'Within 5.0x' : 'High LTI (>5.0x)'}
               </span>
             </div>
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {formatCurrency(numLoan)} / ({formatCurrency(inc1)} + {formatCurrency(inc2)}) = {ltiRatio.toFixed(2)}x
-            </p>
+            <CopyableText
+              text={`${formatCurrency(numLoan)} / (${formatCurrency(inc1)} + ${formatCurrency(inc2)}) = ${ltiRatio.toFixed(2)}x`}
+              className="mt-2 text-xs font-medium text-muted-foreground"
+            />
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -629,9 +632,9 @@ export const LtiCalculator: React.FC = () => {
 // 4. MORTGAGE REPAYMENT CALCULATOR
 export const MortgageRepaymentCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [loanAmount, setLoanAmount] = usePersistentState<string>('repayment:loanAmount', '250000');
-  const [interestRate, setInterestRate] = usePersistentState<string>('repayment:interestRate', '4.5');
-  const [term, setTerm] = usePersistentState<string>('repayment:term', '25');
+  const [loanAmount, setLoanAmount] = usePersistentState<string>('repayment:loanAmount', '');
+  const [interestRate, setInterestRate] = usePersistentState<string>('repayment:interestRate', '');
+  const [term, setTerm] = usePersistentState<string>('repayment:term', '');
   const [showAmortization, setShowAmortization] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -704,9 +707,9 @@ export const MortgageRepaymentCalculator: React.FC = () => {
   };
 
   const handleReset = () => {
-    setLoanAmount('250000');
-    setInterestRate('4.5');
-    setTerm('25');
+    setLoanAmount('');
+    setInterestRate('');
+    setTerm('');
     setShowAmortization(false);
   };
 
@@ -794,9 +797,10 @@ export const MortgageRepaymentCalculator: React.FC = () => {
               value={formatCurrency(monthlyPayment)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              Payment uses {formatCurrency(P)} over {n} months at {(annualR / 12).toFixed(3)}% monthly interest
-            </p>
+            <CopyableText
+              text={`Payment uses ${formatCurrency(P)} over ${n} months at ${(annualR / 12).toFixed(3)}% monthly interest`}
+              className="mt-2 text-xs font-medium text-muted-foreground"
+            />
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -888,9 +892,9 @@ export const MortgageRepaymentCalculator: React.FC = () => {
 // 5. INTEREST-ONLY REPAYMENT CALCULATOR
 export const InterestOnlyCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [loanAmount, setLoanAmount] = usePersistentState<string>('interest-only:loanAmount', '250000');
-  const [interestRate, setInterestRate] = usePersistentState<string>('interest-only:interestRate', '4.5');
-  const [term, setTerm] = usePersistentState<string>('interest-only:term', '25');
+  const [loanAmount, setLoanAmount] = usePersistentState<string>('interest-only:loanAmount', '');
+  const [interestRate, setInterestRate] = usePersistentState<string>('interest-only:interestRate', '');
+  const [term, setTerm] = usePersistentState<string>('interest-only:term', '');
   const [copied, setCopied] = useState(false);
 
   const P = parseFloat(loanAmount) || 0;
@@ -928,9 +932,9 @@ export const InterestOnlyCalculator: React.FC = () => {
   };
 
   const handleReset = () => {
-    setLoanAmount('250000');
-    setInterestRate('4.5');
-    setTerm('25');
+    setLoanAmount('');
+    setInterestRate('');
+    setTerm('');
   };
 
   useEffect(() => {
@@ -1017,9 +1021,10 @@ export const InterestOnlyCalculator: React.FC = () => {
               value={formatCurrency(monthlyPayment)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {formatCurrency(P)} x {annualR}% / 12 = {formatCurrency(monthlyPayment)}
-            </p>
+            <CopyableText
+              text={`${formatCurrency(P)} x ${annualR}% / 12 = ${formatCurrency(monthlyPayment)}`}
+              className="mt-2 text-xs font-medium text-muted-foreground"
+            />
             
             <div className="h-[1px] bg-border my-6"></div>
             

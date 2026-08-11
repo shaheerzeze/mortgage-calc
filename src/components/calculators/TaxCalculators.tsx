@@ -5,7 +5,7 @@ import { usePersistentState } from '../../hooks/usePersistentState';
 import { CalculatorHeader } from './SalaryCalculators';
 import { Sparkles, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { CopyableResult } from '../CopyableResult';
+import { CopyableResult, CopyableText } from '../CopyableResult';
 
 type TaxFrequency = 'annual' | 'monthly' | 'weekly' | 'fortnightly' | 'two-weekly' | 'four-weekly' | 'quarterly' | 'half-yearly';
 
@@ -37,7 +37,7 @@ const getTaxFrequencyLabel = (frequency: TaxFrequency) =>
 // 1. UK TAX ESTIMATOR
 export const TaxEstimator: React.FC = () => {
   const { addHistory } = useApp();
-  const [grossSalary, setGrossSalary] = usePersistentState<string>('tax-estimator:grossSalary', '50000');
+  const [grossSalary, setGrossSalary] = usePersistentState<string>('tax-estimator:grossSalary', '');
   const [frequency, setFrequency] = usePersistentState<TaxFrequency>('tax-estimator:frequency', 'annual');
   const [copied, setCopied] = useState(false);
 
@@ -70,7 +70,7 @@ export const TaxEstimator: React.FC = () => {
   };
 
   const handleReset = () => {
-    setGrossSalary('50000');
+    setGrossSalary('');
     setFrequency('annual');
   };
 
@@ -161,9 +161,10 @@ export const TaxEstimator: React.FC = () => {
               value={formatCurrency(netForFrequency)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {formatCurrency(grossInput)} x {frequencyMultiplier} = {formatCurrency(annualGross)} annual; ({formatCurrency(annualGross)} - {formatCurrency(taxDetails.totalIncomeTax)} tax - {formatCurrency(taxDetails.totalNI)} NI) / {frequencyMultiplier} = {formatCurrency(netForFrequency)}
-            </p>
+            <CopyableText
+              text={`${formatCurrency(grossInput)} x ${frequencyMultiplier} = ${formatCurrency(annualGross)} annual; (${formatCurrency(annualGross)} - ${formatCurrency(taxDetails.totalIncomeTax)} tax - ${formatCurrency(taxDetails.totalNI)} NI) / ${frequencyMultiplier} = ${formatCurrency(netForFrequency)}`}
+              className="mt-2 text-xs font-medium text-muted-foreground"
+            />
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -205,7 +206,7 @@ export const TaxEstimator: React.FC = () => {
 // 2. REVERSE TAX CALCULATOR
 export const ReverseTaxCalculator: React.FC = () => {
   const { addHistory } = useApp();
-  const [targetNet, setTargetNet] = usePersistentState<string>('reverse-tax:targetNet', '36000');
+  const [targetNet, setTargetNet] = usePersistentState<string>('reverse-tax:targetNet', '');
   const [frequency, setFrequency] = usePersistentState<TaxFrequency>('reverse-tax:frequency', 'annual');
   const [copied, setCopied] = useState(false);
 
@@ -236,7 +237,7 @@ export const ReverseTaxCalculator: React.FC = () => {
   };
 
   const handleReset = () => {
-    setTargetNet('36000');
+    setTargetNet('');
     setFrequency('annual');
   };
 
@@ -314,9 +315,10 @@ export const ReverseTaxCalculator: React.FC = () => {
               value={formatCurrency(grossForFrequency)}
               className="text-4xl font-extrabold text-primary tracking-tight"
             />
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {formatCurrency(numNet)} x {frequencyMultiplier} = {formatCurrency(targetAnnualNet)} annual target net; solved backwards to {formatCurrency(estimatedGross)} gross annual
-            </p>
+            <CopyableText
+              text={`${formatCurrency(numNet)} x ${frequencyMultiplier} = ${formatCurrency(targetAnnualNet)} annual target net; solved backwards to ${formatCurrency(estimatedGross)} gross annual`}
+              className="mt-2 text-xs font-medium text-muted-foreground"
+            />
             
             <div className="h-[1px] bg-border my-6"></div>
             
@@ -354,7 +356,7 @@ export const ReverseTaxCalculator: React.FC = () => {
 // 3. TAX BREAKDOWN
 export const TaxBreakdown: React.FC = () => {
   const { addHistory } = useApp();
-  const [grossSalary, setGrossSalary] = usePersistentState<string>('tax-breakdown:grossSalary', '60000');
+  const [grossSalary, setGrossSalary] = usePersistentState<string>('tax-breakdown:grossSalary', '');
   const [copied, setCopied] = useState(false);
 
   const gross = parseFloat(grossSalary) || 0;
@@ -374,7 +376,7 @@ export const TaxBreakdown: React.FC = () => {
   };
 
   const handleReset = () => {
-    setGrossSalary('60000');
+    setGrossSalary('');
   };
 
   useEffect(() => {
@@ -510,9 +512,10 @@ export const TaxBreakdown: React.FC = () => {
               <span className="text-foreground">Net Pay (Take-Home):</span>
               <CopyableResult value={formatCurrency(taxDetails.netAnnual)} className="text-accent" />
             </div>
-            <p className="pt-2 text-xs font-medium text-muted-foreground">
-              Net pay = {formatCurrency(gross)} - {formatCurrency(taxDetails.totalIncomeTax)} tax - {formatCurrency(taxDetails.totalNI)} NI
-            </p>
+            <CopyableText
+              text={`Net pay = ${formatCurrency(gross)} - ${formatCurrency(taxDetails.totalIncomeTax)} tax - ${formatCurrency(taxDetails.totalNI)} NI`}
+              className="pt-2 text-xs font-medium text-muted-foreground"
+            />
           </div>
 
           {copied && (

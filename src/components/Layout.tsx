@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { parseExpression } from '../utils/mathHelpers';
+import { AdvancedCalculator } from './AdvancedCalculator';
 import { 
   ArrowLeftRight,
   BadgePoundSterling,
@@ -50,6 +51,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
   const [formulaResult, setFormulaResult] = useState<number | null>(null);
   const [formulaCopied, setFormulaCopied] = useState(false);
   const [showFormulaDropdown, setShowFormulaDropdown] = useState(false);
+  const [advancedCalculatorOpen, setAdvancedCalculatorOpen] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const formulaInputRef = useRef<HTMLInputElement>(null);
@@ -105,6 +107,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
         setSearchQuery('');
         setFormulaInput('');
         setShowFormulaDropdown(false);
+        setAdvancedCalculatorOpen(false);
         searchInputRef.current?.blur();
         formulaInputRef.current?.blur();
       }
@@ -130,6 +133,12 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
       setFormulaCopied(true);
       setTimeout(() => setFormulaCopied(false), 1500);
     }
+  };
+
+  const handleUseAdvancedCalculatorValue = (value: string) => {
+    setFormulaInput(value);
+    setAdvancedCalculatorOpen(false);
+    formulaInputRef.current?.focus();
   };
 
   return (
@@ -269,15 +278,36 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
                 value={formulaInput}
                 onChange={(e) => setFormulaInput(e.target.value)}
                 placeholder="Quick Formula (e.g. 1200 * 12)"
-                className="w-full pl-4 pr-10 py-2.5 bg-background border border-border rounded-xl text-sm font-medium text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
+                className="w-full pl-4 pr-20 py-2.5 bg-background border border-border rounded-xl text-sm font-medium text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
               />
+              <button
+                type="button"
+                onClick={() => {
+                  setAdvancedCalculatorOpen((open) => !open);
+                  setShowFormulaDropdown(false);
+                }}
+                className={`absolute right-9 top-1/2 -translate-y-1/2 rounded-lg p-1.5 transition-colors ${
+                  advancedCalculatorOpen
+                    ? 'bg-accent/10 text-accent'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+                title="Open advanced calculator"
+              >
+                <Calculator className="w-4 h-4" />
+              </button>
               <span className="absolute right-3 top-2.5 text-sm text-muted-foreground font-semibold font-mono">
                 =
               </span>
             </div>
 
+            <AdvancedCalculator
+              open={advancedCalculatorOpen}
+              onClose={() => setAdvancedCalculatorOpen(false)}
+              onUseExpression={handleUseAdvancedCalculatorValue}
+            />
+
             {/* Formula parser dropdown */}
-            {showFormulaDropdown && formulaResult !== null && (
+            {showFormulaDropdown && formulaResult !== null && !advancedCalculatorOpen && (
               <div className="absolute left-0 right-0 mt-2 bg-card border border-border shadow-lg rounded-xl p-3 z-30 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <span className="text-xxs font-bold text-muted-foreground uppercase tracking-wider">Formula Result</span>
