@@ -282,6 +282,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, calculators }) => {
               />
               <button
                 type="button"
+                onPointerDown={(event) => {
+                  event.stopPropagation();
+                  event.nativeEvent.stopImmediatePropagation();
+                }}
                 onClick={() => {
                   setAdvancedCalculatorOpen((open) => !open);
                   setShowFormulaDropdown(false);

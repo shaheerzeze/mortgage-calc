@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, Clipboard, Copy, Delete, RotateCcw, X } from 'lucide-react';
 
 interface AdvancedCalculatorProps {
@@ -65,6 +65,7 @@ const evaluateExpression = (expression: string): number | null => {
 };
 
 export const AdvancedCalculator: React.FC<AdvancedCalculatorProps> = ({ open, onClose, onUseExpression }) => {
+  const calculatorRef = useRef<HTMLDivElement>(null);
   const [expression, setExpression] = useState('0');
   const [memory, setMemory] = useState(0);
   const [tape, setTape] = useState<TapeItem[]>(readSavedTape);
@@ -116,6 +117,19 @@ export const AdvancedCalculator: React.FC<AdvancedCalculatorProps> = ({ open, on
   useEffect(() => {
     window.localStorage.setItem(TAPE_STORAGE_KEY, JSON.stringify(tape));
   }, [tape]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node | null;
+      if (target && calculatorRef.current?.contains(target)) return;
+      onClose();
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [open, onClose]);
 
   useEffect(() => {
     if (!open) return;
@@ -180,74 +194,74 @@ export const AdvancedCalculator: React.FC<AdvancedCalculatorProps> = ({ open, on
   };
 
   return (
-    <div className="absolute left-1/2 top-full z-40 mt-3 w-[min(92vw,760px)] -translate-x-1/2 rounded-2xl border border-border bg-card shadow-2xl">
-      <div className="grid grid-cols-1 gap-0 overflow-hidden rounded-2xl lg:grid-cols-[1fr_230px]">
-        <div className="p-4">
-          <div className="mb-3 flex items-center justify-between gap-3">
+    <div ref={calculatorRef} className="absolute left-1/2 top-full z-40 mt-2 w-[min(92vw,640px)] -translate-x-1/2 rounded-xl border border-border bg-card shadow-2xl">
+      <div className="grid grid-cols-1 gap-0 overflow-hidden rounded-xl lg:grid-cols-[1fr_190px]">
+        <div className="p-3">
+          <div className="mb-2 flex items-center justify-between gap-3">
             <div>
-              <div className="text-sm font-extrabold text-foreground">Advanced Calculator</div>
-              <div className="text-[11px] font-medium text-muted-foreground">Keyboard friendly with memory and quick finance actions</div>
+              <div className="text-xs font-extrabold text-foreground">Advanced Calculator</div>
+              <div className="text-[10px] font-medium text-muted-foreground">Memory, tape and quick finance actions</div>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-border p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="rounded-lg border border-border p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
               title="Close calculator"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="rounded-xl border border-border bg-background p-3">
+          <div className="rounded-lg border border-border bg-background p-2.5">
             <input
               value={expression}
               onChange={(event) => setExpression(event.target.value || '0')}
-              className="w-full bg-transparent text-right font-mono text-xl font-bold text-foreground outline-none"
+              className="w-full bg-transparent text-right font-mono text-lg font-bold text-foreground outline-none"
               aria-label="Calculator expression"
             />
-            <div className="mt-2 flex items-center justify-between gap-3 border-t border-border pt-2">
+            <div className="mt-1.5 flex items-center justify-between gap-3 border-t border-border pt-1.5">
               <span className="truncate text-[11px] font-semibold text-muted-foreground">Memory: {formatNumber(memory)}</span>
-              <span className={`truncate text-right text-2xl font-extrabold ${result === null ? 'text-red-500' : 'text-primary'}`}>
+              <span className={`truncate text-right text-xl font-extrabold ${result === null ? 'text-red-500' : 'text-primary'}`}>
                 {displayResult}
               </span>
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-4 gap-2">
+          <div className="mt-2 grid grid-cols-4 gap-1.5">
             {keys.map((key) => (
               <button
                 key={key.label}
                 type="button"
                 onClick={key.action || (() => replaceIfZero(key.value || ''))}
-                className={`h-11 rounded-xl border text-sm font-extrabold transition-colors ${keyClass(key.tone)}`}
+                className={`h-9 rounded-lg border text-xs font-extrabold transition-colors ${keyClass(key.tone)}`}
               >
                 {key.label}
               </button>
             ))}
-            <button type="button" onClick={() => applyUnary('negate')} className="h-11 rounded-xl border border-border bg-background text-sm font-extrabold text-foreground hover:bg-muted">+/-</button>
-            <button type="button" onClick={() => applyUnary('sqrt')} className="h-11 rounded-xl border border-border bg-background text-sm font-extrabold text-foreground hover:bg-muted">sqrt</button>
-            <button type="button" onClick={() => applyUnary('square')} className="h-11 rounded-xl border border-border bg-background text-sm font-extrabold text-foreground hover:bg-muted">x^2</button>
-            <button type="button" onClick={() => applyUnary('reciprocal')} className="h-11 rounded-xl border border-border bg-background text-sm font-extrabold text-foreground hover:bg-muted">1/x</button>
-            <button type="button" onClick={() => applyQuick('monthly')} className="h-11 rounded-xl border border-border bg-background text-xs font-extrabold text-foreground hover:bg-muted">x12</button>
-            <button type="button" onClick={() => applyQuick('weekly')} className="h-11 rounded-xl border border-border bg-background text-xs font-extrabold text-foreground hover:bg-muted">x52</button>
-            <button type="button" onClick={() => applyQuick('vatAdd')} className="h-11 rounded-xl border border-border bg-background text-xs font-extrabold text-foreground hover:bg-muted">+VAT</button>
-            <button type="button" onClick={() => applyQuick('vatRemove')} className="h-11 rounded-xl border border-border bg-background text-xs font-extrabold text-foreground hover:bg-muted">-VAT</button>
+            <button type="button" onClick={() => applyUnary('negate')} className="h-9 rounded-lg border border-border bg-background text-xs font-extrabold text-foreground hover:bg-muted">+/-</button>
+            <button type="button" onClick={() => applyUnary('sqrt')} className="h-9 rounded-lg border border-border bg-background text-xs font-extrabold text-foreground hover:bg-muted">sqrt</button>
+            <button type="button" onClick={() => applyUnary('square')} className="h-9 rounded-lg border border-border bg-background text-xs font-extrabold text-foreground hover:bg-muted">x^2</button>
+            <button type="button" onClick={() => applyUnary('reciprocal')} className="h-9 rounded-lg border border-border bg-background text-xs font-extrabold text-foreground hover:bg-muted">1/x</button>
+            <button type="button" onClick={() => applyQuick('monthly')} className="h-9 rounded-lg border border-border bg-background text-[11px] font-extrabold text-foreground hover:bg-muted">x12</button>
+            <button type="button" onClick={() => applyQuick('weekly')} className="h-9 rounded-lg border border-border bg-background text-[11px] font-extrabold text-foreground hover:bg-muted">x52</button>
+            <button type="button" onClick={() => applyQuick('vatAdd')} className="h-9 rounded-lg border border-border bg-background text-[11px] font-extrabold text-foreground hover:bg-muted">+VAT</button>
+            <button type="button" onClick={() => applyQuick('vatRemove')} className="h-9 rounded-lg border border-border bg-background text-[11px] font-extrabold text-foreground hover:bg-muted">-VAT</button>
           </div>
 
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <button type="button" onClick={commitResult} className="h-11 rounded-xl bg-primary text-sm font-extrabold text-primary-foreground hover:opacity-90">=</button>
-            <button type="button" onClick={copyResult} className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border bg-card text-xs font-extrabold text-foreground hover:bg-muted">
+          <div className="mt-2 grid grid-cols-3 gap-1.5">
+            <button type="button" onClick={commitResult} className="h-9 rounded-lg bg-primary text-sm font-extrabold text-primary-foreground hover:opacity-90">=</button>
+            <button type="button" onClick={copyResult} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-card text-xs font-extrabold text-foreground hover:bg-muted">
               {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
               {copied ? 'Copied' : 'Copy'}
             </button>
-            <button type="button" onClick={() => onUseExpression(result !== null ? String(result) : expression)} className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-accent/30 bg-accent/10 text-xs font-extrabold text-accent hover:bg-accent/20">
+            <button type="button" onClick={() => onUseExpression(result !== null ? String(result) : expression)} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 text-xs font-extrabold text-accent hover:bg-accent/20">
               <Clipboard className="h-4 w-4" /> Use
             </button>
           </div>
         </div>
 
-        <aside className="border-t border-border bg-background/70 p-4 lg:border-l lg:border-t-0">
-          <div className="mb-3 flex items-center justify-between">
+        <aside className="border-t border-border bg-background/70 p-3 lg:border-l lg:border-t-0">
+          <div className="mb-2 flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tape</span>
             <button
               type="button"
@@ -258,9 +272,9 @@ export const AdvancedCalculator: React.FC<AdvancedCalculatorProps> = ({ open, on
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
+          <div className="max-h-[330px] space-y-1.5 overflow-y-auto pr-1">
             {tape.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
+              <div className="rounded-lg border border-dashed border-border p-3 text-center text-xs text-muted-foreground">
                 Press = to keep calculations here.
               </div>
             ) : (
@@ -269,7 +283,7 @@ export const AdvancedCalculator: React.FC<AdvancedCalculatorProps> = ({ open, on
                   key={`${item.expression}-${index}`}
                   type="button"
                   onClick={() => setExpression(String(item.result))}
-                  className="block w-full rounded-xl border border-border bg-card p-3 text-left hover:bg-muted"
+                  className="block w-full rounded-lg border border-border bg-card p-2 text-left hover:bg-muted"
                 >
                   <div className="truncate text-[11px] font-medium text-muted-foreground">{item.expression}</div>
                   <div className="truncate font-mono text-sm font-extrabold text-foreground">{formatNumber(item.result)}</div>
@@ -280,7 +294,7 @@ export const AdvancedCalculator: React.FC<AdvancedCalculatorProps> = ({ open, on
           <button
             type="button"
             onClick={backspace}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-extrabold text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-extrabold text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <Delete className="h-4 w-4" /> Backspace
           </button>
